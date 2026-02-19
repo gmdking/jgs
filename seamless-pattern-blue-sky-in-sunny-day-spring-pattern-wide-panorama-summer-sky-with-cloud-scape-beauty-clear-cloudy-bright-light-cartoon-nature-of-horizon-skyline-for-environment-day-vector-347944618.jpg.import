@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b5rb6xjxxmku5"
 path.s3tc="res://.godot/imported/seamless-pattern-blue-sky-in-sunny-day-spring-pattern-wide-panorama-summer-sky-with-cloud-scape-beauty-clear-cloudy-bright-light-cartoon-nature-of-horizon-skyline-for-environment-day-vector-347944618.jpg-52d54ece0eeb130cadc8fcbff32f4dfa.s3tc.ctex"
+path.etc2="res://.godot/imported/seamless-pattern-blue-sky-in-sunny-day-spring-pattern-wide-panorama-summer-sky-with-cloud-scape-beauty-clear-cloudy-bright-light-cartoon-nature-of-horizon-skyline-for-environment-day-vector-347944618.jpg-52d54ece0eeb130cadc8fcbff32f4dfa.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://seamless-pattern-blue-sky-in-sunny-day-spring-pattern-wide-panorama-summer-sky-with-cloud-scape-beauty-clear-cloudy-bright-light-cartoon-nature-of-horizon-skyline-for-environment-day-vector-347944618.jpg"
-dest_files=["res://.godot/imported/seamless-pattern-blue-sky-in-sunny-day-spring-pattern-wide-panorama-summer-sky-with-cloud-scape-beauty-clear-cloudy-bright-light-cartoon-nature-of-horizon-skyline-for-environment-day-vector-347944618.jpg-52d54ece0eeb130cadc8fcbff32f4dfa.s3tc.ctex"]
+dest_files=["res://.godot/imported/seamless-pattern-blue-sky-in-sunny-day-spring-pattern-wide-panorama-summer-sky-with-cloud-scape-beauty-clear-cloudy-bright-light-cartoon-nature-of-horizon-skyline-for-environment-day-vector-347944618.jpg-52d54ece0eeb130cadc8fcbff32f4dfa.s3tc.ctex", "res://.godot/imported/seamless-pattern-blue-sky-in-sunny-day-spring-pattern-wide-panorama-summer-sky-with-cloud-scape-beauty-clear-cloudy-bright-light-cartoon-nature-of-horizon-skyline-for-environment-day-vector-347944618.jpg-52d54ece0eeb130cadc8fcbff32f4dfa.etc2.ctex"]
 
 [params]
 

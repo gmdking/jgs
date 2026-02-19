@@ -1,13 +1,19 @@
-[gd_scene format=3 uid="uid://34dtambqx555"]
+[gd_scene format=3 uid="uid://dow78hphrqf42"]
 
-[ext_resource type="Script" uid="uid://cm7bowsducgs3" path="res://portal.gd" id="1_ef3v5"]
-[ext_resource type="Shader" uid="uid://c2hp2kqufq56u" path="res://new_shader.gdshader" id="2_grrij"]
+[ext_resource type="Script" uid="uid://cfn86ok6wgr18" path="res://portal.gd" id="1_ef3v5"]
+[ext_resource type="Shader" uid="uid://bm22ayokx5xyk" path="res://new_shader.gdshader" id="2_grrij"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_6r214"]
+size = Vector3(1, 1.9494629, 1)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_ef3v5"]
+viewport_path = NodePath("SubViewport")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2pgh4"]
+resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("2_grrij")
+shader_parameter/portal_texture = SubResource("ViewportTexture_ef3v5")
 
 [sub_resource type="QuadMesh" id="QuadMesh_wtc1a"]
 orientation = 0
@@ -33,11 +39,11 @@ material_override = SubResource("ShaderMaterial_2pgh4")
 mesh = SubResource("QuadMesh_wtc1a")
 
 [node name="SubViewport" type="SubViewport" parent="." unique_id=85806300]
-transparent_bg = true
+oversampling = false
 size = Vector2i(1024, 1024)
+render_target_clear_mode = 1
 render_target_update_mode = 4
 
 [node name="Camera3D" type="Camera3D" parent="SubViewport" unique_id=704811735]
-cull_mask = 1048573
 near = 0.01
 far = 1000.0

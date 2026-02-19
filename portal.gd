@@ -10,7 +10,7 @@ extends Node3D
 @onready var portal_camera: Camera3D = $SubViewport/Camera3D
 
 var teleport_cooldown := false
-const TELEPORT_COOLDOWN_TIME := 0.2
+const TELEPORT_COOLDOWN_TIME := 0.1
 
 func _ready():
 	area.body_entered.connect(_on_body_entered)

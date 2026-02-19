@@ -21,18 +21,20 @@ func _ready():
 
 func _input(event):
 	if event is InputEventMouseMotion:
-		# Left/right look
+		# Left right look
 		rotate_y(-event.relative.x * mouse_sensitivity)
 
-		# Up/down look
+		# Up down look
 		pitch -= event.relative.y * mouse_sensitivity
 		pitch = clamp(pitch, -PI/2, PI/2)
 		pivot.rotation.x = pitch
+	
+	if event.is_action_pressed("pause"): # Pause menu
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Frees mouse on pause
+		get_tree().change_scene_to_file("res://menu.tscn") # Changes scene to menu
 
 func _physics_process(delta):
-	# =========================
 	# movement + gravity
-	# =========================
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 
@@ -46,9 +48,7 @@ func _physics_process(delta):
 
 	move_and_slide()
 
-	# =========================
 	# pickup handling
-	# =========================
 	if held_object:
 		# move held object in front of camera
 		var target_pos = camera.global_transform.origin + camera.global_transform.basis.z * -hold_distance
@@ -82,6 +82,6 @@ func try_pickup():
 func drop_object():
 	if held_object:
 		held_object.freeze = false
-		# optional throw impulse
+		# throw, commented out for time being, remove # below to uncomment :D
 		held_object.linear_velocity = camera.global_transform.basis.z * -5
 		held_object = null
