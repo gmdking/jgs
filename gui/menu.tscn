@@ -1,0 +1,193 @@
+[gd_scene format=3 uid="uid://c15qrd2w5kk6l"]
+
+[ext_resource type="Texture2D" uid="uid://beixcu66i5apy" path="res://gui/sources/background.png" id="1_vd72o"]
+[ext_resource type="FontFile" uid="uid://dqb3hg0m3jtce" path="res://gui/sources/Frutiger.ttf" id="2_o6i5c"]
+[ext_resource type="Script" uid="uid://mw80ah108nvp" path="res://gui/toSettings.gd" id="3_heart"]
+[ext_resource type="Script" uid="uid://d4vktwn7slf8" path="res://gui/play.gd" id="3_ijvwb"]
+[ext_resource type="Script" uid="uid://wkkiuf8mltp2" path="res://gui/quit.gd" id="3_o6i5c"]
+[ext_resource type="Script" uid="uid://bedqcyefdpibc" path="res://gui/toHome.gd" id="4_ijvwb"]
+[ext_resource type="Texture2D" uid="uid://dpwfe53b0uu6a" path="res://gui/sources/logo.png" id="5_bhqxs"]
+
+[sub_resource type="Theme" id="Theme_l48gv"]
+default_font = ExtResource("2_o6i5c")
+default_font_size = 35
+
+[sub_resource type="Theme" id="Theme_4hy44"]
+default_font = ExtResource("2_o6i5c")
+default_font_size = 269
+
+[sub_resource type="LabelSettings" id="LabelSettings_4hy44"]
+font_size = 256
+shadow_size = 12
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Theme" id="Theme_ytr4m"]
+default_base_scale = 0.8
+default_font_size = 93
+
+[sub_resource type="LabelSettings" id="LabelSettings_ytr4m"]
+font = ExtResource("2_o6i5c")
+font_size = 60
+shadow_size = 6
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_mae5d"]
+font = ExtResource("2_o6i5c")
+font_size = 60
+shadow_size = 6
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Theme" id="Theme_ouk20"]
+default_font_size = 71
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_heart"]
+allow_unpress = true
+
+[sub_resource type="Theme" id="Theme_mae5d"]
+default_font_size = 56
+
+[node name="Menu" type="Node2D" unique_id=1470998918]
+
+[node name="Background" type="Sprite2D" parent="." unique_id=1180878312]
+position = Vector2(2985, -349)
+scale = Vector2(7.898613, 7.8924537)
+texture = ExtResource("1_vd72o")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1704999720]
+ignore_rotation = false
+zoom = Vector2(0.5, 0.5)
+position_smoothing_enabled = true
+position_smoothing_speed = 10.0
+editor_draw_screen = false
+
+[node name="Ver string" type="Label" parent="Camera2D" unique_id=169217472]
+offset_left = -1151.0
+offset_top = 602.0
+offset_right = 115.0
+offset_bottom = 861.0
+theme = SubResource("Theme_l48gv")
+text = "version a0.0.0"
+
+[node name="Text" type="Node2D" parent="." unique_id=1721397417]
+position = Vector2(-1088, -591)
+
+[node name="0" type="Node2D" parent="Text" unique_id=152776205]
+
+[node name="JGS" type="Label" parent="Text/0" unique_id=1078915941]
+offset_right = 474.0
+offset_bottom = 255.0
+tooltip_text = "SCRAM"
+theme = SubResource("Theme_4hy44")
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+text = "JGS"
+label_settings = SubResource("LabelSettings_4hy44")
+
+[node name="Para1" type="Label" parent="Text/0" unique_id=1078260093]
+offset_top = 207.0
+offset_right = 1266.0
+offset_bottom = 466.0
+theme = SubResource("Theme_ytr4m")
+text = "Jolt Physics Godot Sandbox"
+label_settings = SubResource("LabelSettings_ytr4m")
+
+[node name="1" type="Node2D" parent="Text" unique_id=1923040150]
+position = Vector2(0, 2)
+
+[node name="Label" type="Label" parent="Text/1" unique_id=429999757]
+offset_left = 4998.0
+offset_right = 7176.0
+offset_bottom = 637.0
+text = "Controls:
+
+KBM:
+Camera: Move with mouse
+Move: WASD, Arrow Keys
+Jump: Space
+Sprint: Shift
+Super Sprint: Shift + Ctrl
+
+Nothing else to say :)"
+label_settings = SubResource("LabelSettings_mae5d")
+
+[node name="Buttons" type="Node2D" parent="." unique_id=1050484814]
+
+[node name="0" type="Node2D" parent="Buttons" unique_id=1112301274]
+position = Vector2(7, 0)
+
+[node name="Play" type="Button" parent="Buttons/0" unique_id=1288620512]
+offset_left = -159.0
+offset_top = 129.0
+offset_right = 161.0
+offset_bottom = 385.0
+theme = SubResource("Theme_ouk20")
+button_group = SubResource("ButtonGroup_heart")
+text = "Play"
+autowrap_mode = 2
+script = ExtResource("3_ijvwb")
+
+[node name="Quit" type="Button" parent="Buttons/0" unique_id=1484298724]
+offset_left = -543.0
+offset_top = 130.0
+offset_right = -224.0
+offset_bottom = 385.0
+theme = SubResource("Theme_mae5d")
+button_group = SubResource("ButtonGroup_heart")
+text = "Quit"
+script = ExtResource("3_o6i5c")
+
+[node name="Options and help" type="Button" parent="Buttons/0" unique_id=237365145 node_paths=PackedStringArray("camera")]
+offset_left = 225.0
+offset_top = 130.0
+offset_right = 545.0
+offset_bottom = 385.0
+theme = SubResource("Theme_ouk20")
+button_group = SubResource("ButtonGroup_heart")
+text = "Options and Help"
+autowrap_mode = 3
+autowrap_trim_flags = 0
+script = ExtResource("3_heart")
+camera = NodePath("../../../Camera2D")
+
+[node name="1" type="Node2D" parent="Buttons" unique_id=595602597]
+
+[node name="Back" type="Button" parent="Buttons/1" unique_id=1413082344 node_paths=PackedStringArray("camera")]
+offset_left = 4872.0
+offset_top = 130.0
+offset_right = 5192.0
+offset_bottom = 385.0
+theme = SubResource("Theme_ouk20")
+button_group = SubResource("ButtonGroup_heart")
+text = "Back"
+autowrap_mode = 3
+autowrap_trim_flags = 0
+script = ExtResource("4_ijvwb")
+camera = NodePath("../../../Camera2D")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1118203394]
+texture_filter = 1
+texture_repeat = 1
+position = Vector2(-528, -454.00003)
+scale = Vector2(6, 6)
+texture = ExtResource("5_bhqxs")
+
+[node name="Camera2D2" type="Camera2D" parent="." unique_id=1718401110]
+position = Vector2(-5000, 0)
+ignore_rotation = false
+enabled = false
+zoom = Vector2(0.5, 0.5)
+process_callback = 0
+position_smoothing_speed = 10.0
+editor_draw_limits = true
+
+[node name="Ver string" type="Label" parent="Camera2D2" unique_id=1429274063]
+offset_left = -1151.0
+offset_top = 602.0
+offset_right = 115.0
+offset_bottom = 861.0
+theme = SubResource("Theme_l48gv")
+text = "version a0.0.0"
+
+[connection signal="pressed" from="Buttons/0/Play" to="Buttons/0/Play" method="_on_pressed"]
+[connection signal="pressed" from="Buttons/0/Quit" to="Buttons/0/Quit" method="_on_pressed"]
+[connection signal="pressed" from="Buttons/0/Options and help" to="Buttons/0/Options and help" method="_on_pressed"]
+[connection signal="pressed" from="Buttons/1/Back" to="Buttons/1/Back" method="_on_pressed"]

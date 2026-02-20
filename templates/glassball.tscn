@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://c8dmxusgabpey"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_277s8"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1iotr"]
+transparency = 1
+blend_mode = 1
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.69411767, 0.8784314, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_q2x10"]
+
+[node name="RigidBody3D" type="RigidBody3D" unique_id=983496083]
+mass = 0.5
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=978701242]
+shape = SubResource("SphereShape3D_277s8")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1578069609]
+material_override = SubResource("StandardMaterial3D_1iotr")
+mesh = SubResource("SphereMesh_q2x10")

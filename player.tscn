@@ -1,0 +1,149 @@
+[gd_scene format=3 uid="uid://buop7fppn5oe4"]
+
+[ext_resource type="Texture2D" uid="uid://b6r3yl64wttfx" path="res://gui/sources/cross.png" id="1_4flbx"]
+
+[sub_resource type="GDScript" id="GDScript_4xowi"]
+script/source = "extends CharacterBody3D
+
+@export var speed := 5.0
+@export var sprint_speed := 10.0
+var lowjump := 4.5
+var highjump := 9
+var curjump := 9
+@export var gravity := 9.8
+@export var mouse_sensitivity := 0.002
+var current_speed := 5.0
+var walk_speed := 5.0
+@export var pickup_key := \"pickup\"
+@export var drop_key := \"drop\"
+@export var pickup_range := 4.0
+@export var hold_distance := 3.0
+
+@onready var pivot = $CameraPivot
+@onready var camera: Camera3D = $CameraPivot/Camera3D
+
+var pitch := 0.0
+var held_object: RigidBody3D = null
+
+func _ready():
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+func _input(event):
+	if event is InputEventMouseMotion:
+		# Left right look
+		rotate_y(-event.relative.x * mouse_sensitivity)
+
+		# Up down look
+		pitch -= event.relative.y * mouse_sensitivity
+		pitch = clamp(pitch, -PI/2, PI/2)
+		pivot.rotation.x = pitch
+	
+	if event.is_action_pressed(\"pause\"): # Pause menu
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Frees mouse on pause
+		get_tree().change_scene_to_file(\"res://gui/menu.tscn\") # Changes scene to menu
+
+func _physics_process(delta):
+	# movement + gravity
+	if not is_on_floor():
+		velocity.y -= gravity * delta
+
+	if Input.is_action_just_pressed(\"jump\") and is_on_floor():
+		velocity.y = curjump
+		
+			# Sprint check
+	if Input.is_action_pressed(\"sprint\") and Input.is_action_pressed(\"sprint2\"):
+
+		current_speed = sprint_speed * 2
+		curjump = highjump * 2
+
+	elif Input.is_action_pressed(\"sprint\"):
+
+		current_speed = sprint_speed
+		curjump = highjump
+
+	else:
+
+		current_speed = walk_speed
+		curjump = lowjump
+		
+	var input_dir = Input.get_vector(\"left\", \"right\", \"forward\", \"backward\")
+	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	velocity.x = direction.x * current_speed
+	velocity.z = direction.z * current_speed
+
+	move_and_slide()
+
+	# pickup handling
+	if held_object:
+		# move held object in front of camera
+		var target_pos = camera.global_transform.origin + camera.global_transform.basis.z * -hold_distance
+		held_object.freeze = true
+		held_object.global_transform.origin = target_pos
+
+		if Input.is_action_just_pressed(drop_key):
+			drop_object()
+	else:
+		if Input.is_action_just_pressed(pickup_key):
+			try_pickup()
+
+func try_pickup():
+	if camera == null:
+		return
+
+	var mouse_pos = get_viewport().get_mouse_position()
+	var from = camera.project_ray_origin(mouse_pos)
+	var to = from + camera.project_ray_normal(mouse_pos) * pickup_range
+
+	var query = PhysicsRayQueryParameters3D.new()
+	query.from = from
+	query.to = to
+	query.exclude = [self]
+
+	var result = get_world_3d().direct_space_state.intersect_ray(query)
+	if result and result.has(\"collider\") and result[\"collider\"] is RigidBody3D:
+		held_object = result[\"collider\"]
+		held_object.freeze = true
+
+func drop_object():
+	if held_object:
+		held_object.freeze = false
+		
+		if pitch >0.01:
+			held_object.linear_velocity = camera.global_transform.basis.z * -pitch * 12 # this feels SOOO nice dude
+			
+		held_object = null
+"
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_jka67"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_i5arm"]
+
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=516576517]
+transform = Transform3D(-0.98207736, 0, -0.1884784, 0, 1, 0, 0.1884784, 0, -0.98207736, 0, 0, 0)
+floor_max_angle = 1.0489429
+script = SubResource("GDScript_4xowi")
+
+[node name="CameraPivot" type="Node3D" parent="." unique_id=1331204254]
+transform = Transform3D(0.0024656216, 0, 0, 0, 0.0004567229, 0, 0, 0, 0.0015710162, -0.00015306473, 0.7239826, -0.42145157)
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot" unique_id=1014296042]
+transform = Transform3D(405.57724, 0, 0, 0, 2189.5115, 0, 0, 0, 636.5307, 0, 0, 14.236328)
+
+[node name="Sprite3D" type="Sprite3D" parent="CameraPivot/Camera3D" unique_id=528329506]
+transform = Transform3D(0.050000004, 0, -9.313226e-10, 0, 0.05, 0, 9.313226e-10, 0, 0.050000004, 0, 0, -0.099999994)
+billboard = 1
+double_sided = false
+no_depth_test = true
+alpha_scissor_threshold = 0.0
+alpha_hash_scale = 0.0
+texture_filter = 0
+texture = ExtResource("1_4flbx")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1966873946]
+transform = Transform3D(0.98916274, 0, 0, 0, 0.98887503, 0, 0, 0, 0.98925906, -0.0001578331, 0.0002887249, -0.00030517578)
+layers = 2
+mesh = SubResource("CapsuleMesh_jka67")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=596483658]
+transform = Transform3D(0.9508414, 0, 0, 0, 0.9508414, 0, 0, 0, 0.9508414, -0.0001578331, 0.0002887249, -0.00030517578)
+shape = SubResource("CapsuleShape3D_i5arm")
