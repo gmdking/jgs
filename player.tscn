@@ -5,113 +5,148 @@
 [sub_resource type="GDScript" id="GDScript_4xowi"]
 script/source = "extends CharacterBody3D
 
-@export var speed := 5.0
 @export var sprint_speed := 10.0
+@export var gravity := 9.8
+@export var mouse_sensitivity := 0.002
 var lowjump := 4.5
 var highjump := 9
 var curjump := 9
-@export var gravity := 9.8
-@export var mouse_sensitivity := 0.002
 var current_speed := 5.0
 var walk_speed := 5.0
 @export var pickup_key := \"pickup\"
 @export var drop_key := \"drop\"
-@export var pickup_range := 4.0
+@export var duplicate_key := \"dupl\"
+@export var delete_key := \"del\"
 @export var hold_distance := 3.0
+@export var pickup_range := 4.0
 
 @onready var pivot = $CameraPivot
 @onready var camera: Camera3D = $CameraPivot/Camera3D
+@onready var ray: RayCast3D = $CameraPivot/Camera3D/InteractRay
 
-var pitch := 0.0
 var held_object: RigidBody3D = null
+var pitch := 0.0
+
+var wants_pickup := false
+var wants_drop := false
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	if ray:
+		ray.enabled = true
 
 func _input(event):
 	if event is InputEventMouseMotion:
-		# Left right look
 		rotate_y(-event.relative.x * mouse_sensitivity)
-
-		# Up down look
 		pitch -= event.relative.y * mouse_sensitivity
 		pitch = clamp(pitch, -PI/2, PI/2)
 		pivot.rotation.x = pitch
-	
-	if event.is_action_pressed(\"pause\"): # Pause menu
-		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Frees mouse on pause
-		get_tree().change_scene_to_file(\"res://gui/menu.tscn\") # Changes scene to menu
+
+	if event.is_action_pressed(\"pause\"):
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		get_tree().change_scene_to_file(\"res://gui/menu.tscn\")
+
+	if event.is_action_pressed(pickup_key):
+		wants_pickup = true
+	if event.is_action_pressed(drop_key):
+		wants_drop = true
+
+	if event.is_action_pressed(duplicate_key):
+		duplicate_target()
+	if event.is_action_pressed(delete_key):
+		delete_target()
 
 func _physics_process(delta):
-	# movement + gravity
+	# Gravity
 	if not is_on_floor():
 		velocity.y -= gravity * delta
-
 	if Input.is_action_just_pressed(\"jump\") and is_on_floor():
 		velocity.y = curjump
-		
-			# Sprint check
-	if Input.is_action_pressed(\"sprint\") and Input.is_action_pressed(\"sprint2\"):
 
+	# Sprint
+	if Input.is_action_pressed(\"sprint\") and Input.is_action_pressed(\"sprint2\"):
 		current_speed = sprint_speed * 2
 		curjump = highjump * 2
-
 	elif Input.is_action_pressed(\"sprint\"):
-
 		current_speed = sprint_speed
 		curjump = highjump
-
 	else:
-
 		current_speed = walk_speed
 		curjump = lowjump
-		
+
+	# Movement
 	var input_dir = Input.get_vector(\"left\", \"right\", \"forward\", \"backward\")
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	velocity.x = direction.x * current_speed
 	velocity.z = direction.z * current_speed
-
 	move_and_slide()
 
-	# pickup handling
+	# Handle pickup and drop flags
+	if wants_pickup:
+		wants_pickup = false
+		_try_pickup()
+	if wants_drop:
+		wants_drop = false
+		_drop_object()
+
+	# Move held object every frame
 	if held_object:
-		# move held object in front of camera
-		var target_pos = camera.global_transform.origin + camera.global_transform.basis.z * -hold_distance
-		held_object.freeze = true
-		held_object.global_transform.origin = target_pos
+		var target_pos = camera.global_transform.origin + (-camera.global_transform.basis.z * hold_distance)
+		held_object.global_position = target_pos
+		held_object.linear_velocity = Vector3.ZERO
+		held_object.angular_velocity = Vector3.ZERO
 
-		if Input.is_action_just_pressed(drop_key):
-			drop_object()
-	else:
-		if Input.is_action_just_pressed(pickup_key):
-			try_pickup()
-
-func try_pickup():
-	if camera == null:
+func _try_pickup():
+	if held_object:
 		return
-
-	var mouse_pos = get_viewport().get_mouse_position()
-	var from = camera.project_ray_origin(mouse_pos)
-	var to = from + camera.project_ray_normal(mouse_pos) * pickup_range
-
+	var from = camera.global_transform.origin
+	var to = from + (-camera.global_transform.basis.z * pickup_range)
 	var query = PhysicsRayQueryParameters3D.new()
 	query.from = from
 	query.to = to
-	query.exclude = [self]
-
+	query.exclude = [self.get_rid()]
 	var result = get_world_3d().direct_space_state.intersect_ray(query)
 	if result and result.has(\"collider\") and result[\"collider\"] is RigidBody3D:
 		held_object = result[\"collider\"]
+		# CRITICAL: Must use FREEZE_MODE_KINEMATIC so position can be updated while frozen
+		held_object.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
 		held_object.freeze = true
 
-func drop_object():
-	if held_object:
-		held_object.freeze = false
-		
-		if pitch >0.01:
-			held_object.linear_velocity = camera.global_transform.basis.z * -pitch * 12 # this feels SOOO nice dude
-			
+func _drop_object():
+	if not held_object:
+		return
+	held_object.freeze = false
+	held_object.freeze_mode = RigidBody3D.FREEZE_MODE_STATIC  # restore default
+	if pitch > -1:
+		held_object.linear_velocity = -camera.global_transform.basis.z * pitch * 12
+	held_object = null
+
+func _get_target_object() -> RigidBody3D:
+	if ray and ray.is_colliding():
+		var obj = ray.get_collider()
+		if obj and obj is RigidBody3D:
+			return obj
+	return null
+
+func duplicate_target():
+	var target = _get_target_object()
+	if target == null or target == held_object:
+		return
+	var copy = target.duplicate()
+	target.get_parent().add_child(copy)
+	copy.global_transform = target.global_transform
+	copy.global_transform.origin += -camera.global_transform.basis.z * 1.5
+	copy.freeze = false
+	copy.linear_velocity = Vector3.ZERO
+	copy.angular_velocity = Vector3.ZERO
+
+func delete_target():
+	var target = _get_target_object()
+	if target == null:
+		return
+	if target == held_object:
 		held_object = null
+	target.queue_free()
 "
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_jka67"]
@@ -128,6 +163,12 @@ transform = Transform3D(0.0024656216, 0, 0, 0, 0.0004567229, 0, 0, 0, 0.00157101
 
 [node name="Camera3D" type="Camera3D" parent="CameraPivot" unique_id=1014296042]
 transform = Transform3D(405.57724, 0, 0, 0, 2189.5115, 0, 0, 0, 636.5307, 0, 0, 14.236328)
+
+[node name="InteractRay" type="RayCast3D" parent="CameraPivot/Camera3D" unique_id=621083535]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+target_position = Vector3(0, -5, 0)
+collide_with_areas = true
+debug_shape_thickness = 5
 
 [node name="Sprite3D" type="Sprite3D" parent="CameraPivot/Camera3D" unique_id=528329506]
 transform = Transform3D(0.050000004, 0, -9.313226e-10, 0, 0.05, 0, 9.313226e-10, 0, 0.050000004, 0, 0, -0.099999994)

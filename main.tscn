@@ -77,6 +77,7 @@ glow_enabled = true
 [node name="Label" type="Label" parent="CanvasLayer" unique_id=1611419056]
 offset_right = 40.0
 offset_bottom = 23.0
+scale = Vector2(6.825, 6.825)
 script = ExtResource("1_1u8w0")
 
 [node name="Floor And Structure" type="Node3D" parent="." unique_id=907915289]
@@ -109,7 +110,7 @@ mesh = SubResource("BoxMesh_a0tk4")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8.931741)
 
 [node name="CollisionShape3D5" type="CollisionShape3D" parent="hoop" unique_id=352117249]
-transform = Transform3D(0.01216457, 0, -0.9999261, 0, 1, 0, 0.9999261, 0, 0.01216457, 0.8296342, 5.329763, 0.8191881)
+transform = Transform3D(0.01216457, 0, -0.9999261, 0, 1, 0, 0.9999261, 0, 0.01216457, 0.8431864, 5.329763, 0.8191881)
 shape = SubResource("BoxShape3D_i5arm")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="hoop" unique_id=1567252346]
@@ -130,7 +131,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.13224792, 5.364378, 2.0021
 shape = SubResource("BoxShape3D_i5arm")
 
 [node name="CollisionShape3D4" type="CollisionShape3D" parent="hoop" unique_id=523758461]
-transform = Transform3D(0.0034207795, 0, -0.99999416, 0, 1, 0, 0.99999416, 0, 0.0034207795, -0.9488865, 5.364378, 1.375545)
+transform = Transform3D(0.0034207795, 0, -0.99999416, 0, 1, 0, 0.99999416, 0, 0.0034207795, -0.8624229, 5.364378, 1.375545)
 shape = SubResource("BoxShape3D_i5arm")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="hoop" unique_id=1513044585]
@@ -219,4 +220,4 @@ transform = Transform3D(1, 0, 0, 0, 0.38698465, 0.9220862, 0, -0.92208624, 0.386
 shadow_enabled = true
 
 [node name="CharacterBody3D" parent="." unique_id=516576517 instance=ExtResource("24_1u8w0")]
-transform = Transform3D(-0.98207736, 0, -0.1884784, 0, 1, 0, 0.1884784, 0, -0.98207736, 0.08278155, 1.4885863, 0.1283288)
+transform = Transform3D(-0.98207736, 0, -0.1884784, 0, 1, 0, 0.1884784, 0, -0.98207736, 0, 2.9143124, 0)

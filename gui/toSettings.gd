@@ -4,7 +4,7 @@ extends Button  # or Control if attached to parent
 @export var camera: Camera2D
 
 # Target coordinates
-@export var target_position := Vector2(5000, 0)  # replace with whatever you want
+@export var target_position := Vector2(5000, 0) 
 
 func _ready():
 	connect("pressed", Callable(self, "_on_button_pressed"))
