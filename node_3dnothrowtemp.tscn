@@ -3,7 +3,8 @@
 [ext_resource type="PackedScene" uid="uid://dow78hphrqf42" path="res://portal.tscn" id="1_ykeok"]
 [ext_resource type="Script" uid="uid://bsoq6bxdqnvdd" path="res://character_body_3dnt.gd" id="2_ykeok"]
 [ext_resource type="Texture2D" uid="uid://b5rb6xjxxmku5" path="res://seamless-pattern-blue-sky-in-sunny-day-spring-pattern-wide-panorama-summer-sky-with-cloud-scape-beauty-clear-cloudy-bright-light-cartoon-nature-of-horizon-skyline-for-environment-day-vector-347944618.jpg" id="3_0p2te"]
-[ext_resource type="Script" uid="uid://vge43b7si1br" path="res://rigid_body_3d.gd" id="4_625sc"]
+[ext_resource type="PackedScene" uid="uid://cfmrch685g2hv" path="res://cube.tscn" id="4_0p2te"]
+[ext_resource type="PackedScene" uid="uid://byi2cavcjbakn" path="res://cubeheavy.tscn" id="5_625sc"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_noarx"]
 
@@ -30,10 +31,18 @@ sky_material = SubResource("PhysicalSkyMaterial_noarx")
 [sub_resource type="Environment" id="Environment_r3fl7"]
 background_mode = 2
 sky = SubResource("Sky_a0tk4")
-sky_custom_fov = 81.0
+ambient_light_source = 3
+ambient_light_sky_contribution = 0.5
+ssao_enabled = true
+glow_enabled = true
+
+[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_jka67"]
+auto_exposure_enabled = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_jka67"]
-size = Vector3(6.9814453, 2.6042328, 0.001)
+size = Vector3(6.9814453, 3.3164098, 0.001)
+
+[sub_resource type="PrismMesh" id="PrismMesh_jka67"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_i5arm"]
 size = Vector3(1.9189758, 1, 0.6398926)
@@ -76,6 +85,21 @@ bounce = 0.7
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i5arm"]
 vertex_color_use_as_albedo = true
 albedo_color = Color(1.5802358, 0.6998183, 0, 1)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ifqa3"]
+bounce = 0.7
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0p2te"]
+vertex_color_use_as_albedo = true
+albedo_color = Color(1.5802358, 0.6998183, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_625sc"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edlrj"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_t8kr7"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_v0dq8"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jka67"]
 albedo_color = Color(1, 0, 0, 1)
@@ -159,6 +183,7 @@ shape = SubResource("BoxShape3D_a0tk4")
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=43036917]
 transform = Transform3D(-0.98207736, 0, -0.1884784, 0, 1, 0, 0.1884784, 0, -0.98207736, -10.09935, 13.894146, -10.950845)
+floor_max_angle = 1.0489429
 script = ExtResource("2_ykeok")
 
 [node name="CameraPivot" type="Node3D" parent="CharacterBody3D" unique_id=784099571]
@@ -178,10 +203,12 @@ shape = SubResource("CapsuleShape3D_i5arm")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1470846210]
 environment = SubResource("Environment_r3fl7")
+camera_attributes = SubResource("CameraAttributesPhysical_jka67")
 
 [node name="SpotLight3D" type="SpotLight3D" parent="." unique_id=1721401660]
 transform = Transform3D(1, 0, 0, 0, 0.006946345, 0.99997586, 0, -0.99997586, 0.006946345, 0, 14.661466, 0)
 light_energy = 4.016
+shadow_enabled = true
 spot_range = 123.9068
 spot_angle = 62.772453
 
@@ -189,9 +216,13 @@ spot_angle = 62.772453
 transform = Transform3D(0.97038144, 1.6949617, 11.693009, -0.14017989, 11.733206, -1.6891551, -11.814386, 0, 0.98045427, -74.02852, 32.75504, 13.898494)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fat ramp" unique_id=170633890]
-transform = Transform3D(0.6653343, -0.011835694, -0.0046169907, 0.0038073058, 4.95119, 0.59266984, 0.0017462894, -6.284727, 0.4669191, 0.025627494, 4.0814767, -4.65312)
+transform = Transform3D(0.6653523, -0.0039767027, -0.004886102, 0.0035907459, 4.9475503, 0.5929405, 0.0024044067, -6.287601, 0.46657252, 0.022145033, 5.3151016, -6.234686)
 shape = SubResource("BoxShape3D_jka67")
 debug_color = Color(0, 0.506122, 0.5901097, 1)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="fat ramp" unique_id=2013014247]
+transform = Transform3D(-0.74718463, 0.3660425, 5.126326, -8.989525, 20.909525, -0.18588893, -14.218883, -13.238675, -0.15185773, -0.34785903, 1.0450976, -6.874754)
+mesh = SubResource("PrismMesh_jka67")
 
 [node name="hoop" type="StaticBody3D" parent="." unique_id=696475594]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8.931741)
@@ -233,7 +264,6 @@ mesh = SubResource("TorusMesh_4arys")
 [node name="infinite mass ball" type="RigidBody3D" parent="fun little trinkets" unique_id=1698666161]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.1800714, 2.2830434, -19.022045)
 mass = 1e+18
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/infinite mass ball" unique_id=2037454045]
 shape = SubResource("SphereShape3D_jka67")
@@ -245,7 +275,6 @@ mesh = SubResource("SphereMesh_jsk3o")
 [node name="infinite mass cube" type="RigidBody3D" parent="fun little trinkets" unique_id=304925198]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.4809027, 2.092004, -19.174187)
 mass = 1e+18
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/infinite mass cube" unique_id=1203723949]
 shape = SubResource("BoxShape3D_r3fl7")
@@ -268,7 +297,6 @@ shape = SubResource("SphereShape3D_jka67")
 
 [node name="ball sister 1" type="RigidBody3D" parent="fun little trinkets" unique_id=1577823206]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.616038, 0, -23.929668)
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/ball sister 1" unique_id=992995725]
 shape = SubResource("BoxShape3D_r3fl7")
@@ -278,7 +306,6 @@ mesh = SubResource("BoxMesh_jka67")
 
 [node name="ball sister 2" type="RigidBody3D" parent="fun little trinkets" unique_id=911253898]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.923252, 0, -23.929668)
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/ball sister 2" unique_id=1650746676]
 shape = SubResource("BoxShape3D_r3fl7")
@@ -288,7 +315,6 @@ mesh = SubResource("BoxMesh_jka67")
 
 [node name="ball sister 3" type="RigidBody3D" parent="fun little trinkets" unique_id=1234617839]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.2204304, 0, -23.929668)
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/ball sister 3" unique_id=759676783]
 shape = SubResource("BoxShape3D_r3fl7")
@@ -298,7 +324,6 @@ mesh = SubResource("BoxMesh_jka67")
 
 [node name="ball sister 4" type="RigidBody3D" parent="fun little trinkets" unique_id=2092257445]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.101753, 1.0880306, -23.929668)
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/ball sister 4" unique_id=2099704239]
 shape = SubResource("BoxShape3D_r3fl7")
@@ -308,7 +333,6 @@ mesh = SubResource("BoxMesh_jka67")
 
 [node name="ball sister 5" type="RigidBody3D" parent="fun little trinkets" unique_id=716861915]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.758092, 1.0851283, -23.929668)
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/ball sister 5" unique_id=8240290]
 shape = SubResource("BoxShape3D_r3fl7")
@@ -318,7 +342,6 @@ mesh = SubResource("BoxMesh_jka67")
 
 [node name="ball sister 6" type="RigidBody3D" parent="fun little trinkets" unique_id=1975627015]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.887562, 2.092004, -23.929668)
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/ball sister 6" unique_id=414240560]
 shape = SubResource("BoxShape3D_r3fl7")
@@ -328,7 +351,6 @@ mesh = SubResource("BoxMesh_jka67")
 
 [node name="ball sister 7" type="RigidBody3D" parent="fun little trinkets" unique_id=1326775407]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.870884, 0, -23.929668)
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/ball sister 7" unique_id=676359117]
 shape = SubResource("BoxShape3D_r3fl7")
@@ -338,7 +360,6 @@ mesh = SubResource("BoxMesh_jka67")
 
 [node name="ball sister 8" type="RigidBody3D" parent="fun little trinkets" unique_id=289467000]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.034505, 0, -23.929668)
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/ball sister 8" unique_id=1749577681]
 shape = SubResource("BoxShape3D_r3fl7")
@@ -348,7 +369,6 @@ mesh = SubResource("BoxMesh_jka67")
 
 [node name="ball sister 9" type="RigidBody3D" parent="fun little trinkets" unique_id=329916112]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1285033, 0, -23.929668)
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/ball sister 9" unique_id=1742122355]
 shape = SubResource("BoxShape3D_r3fl7")
@@ -358,7 +378,6 @@ mesh = SubResource("BoxMesh_jka67")
 
 [node name="ball sister 10" type="RigidBody3D" parent="fun little trinkets" unique_id=437834000]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0560331, 1.0880306, -23.929668)
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/ball sister 10" unique_id=2065330763]
 shape = SubResource("BoxShape3D_r3fl7")
@@ -368,7 +387,6 @@ mesh = SubResource("BoxMesh_jka67")
 
 [node name="ball sister 11" type="RigidBody3D" parent="fun little trinkets" unique_id=524788686]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.902073, 1.0851283, -23.929668)
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/ball sister 11" unique_id=1674749485]
 shape = SubResource("BoxShape3D_r3fl7")
@@ -378,7 +396,6 @@ mesh = SubResource("BoxMesh_jka67")
 
 [node name="ball sister 12" type="RigidBody3D" parent="fun little trinkets" unique_id=264088831]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9981298, 2.092004, -23.929668)
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/ball sister 12" unique_id=2116468285]
 shape = SubResource("BoxShape3D_r3fl7")
@@ -388,7 +405,6 @@ mesh = SubResource("BoxMesh_jka67")
 
 [node name="ball brother 1" type="RigidBody3D" parent="fun little trinkets" unique_id=1515120354]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22432232, 1.18783, 9.227852)
-script = ExtResource("4_625sc")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="fun little trinkets/ball brother 1" unique_id=1508954694]
 mesh = SubResource("SphereMesh_r3fl7")
@@ -398,7 +414,6 @@ shape = SubResource("SphereShape3D_jka67")
 
 [node name="ball brother 2" type="RigidBody3D" parent="fun little trinkets" unique_id=1458899443]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11216116, 2.9573975, 5.8957767)
-script = ExtResource("4_625sc")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="fun little trinkets/ball brother 2" unique_id=1065195498]
 mesh = SubResource("SphereMesh_r3fl7")
@@ -408,7 +423,6 @@ shape = SubResource("SphereShape3D_jka67")
 
 [node name="ball brother 3" type="RigidBody3D" parent="fun little trinkets" unique_id=1536263667]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22432232, 1.18783, 14.553789)
-script = ExtResource("4_625sc")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="fun little trinkets/ball brother 3" unique_id=1826131306]
 mesh = SubResource("SphereMesh_r3fl7")
@@ -418,7 +432,6 @@ shape = SubResource("SphereShape3D_jka67")
 
 [node name="ball brother 4" type="RigidBody3D" parent="fun little trinkets" unique_id=1631760266]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11216116, 2.9573975, 11.221714)
-script = ExtResource("4_625sc")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="fun little trinkets/ball brother 4" unique_id=1016734594]
 mesh = SubResource("SphereMesh_r3fl7")
@@ -428,7 +441,6 @@ shape = SubResource("SphereShape3D_jka67")
 
 [node name="ball brother 5" type="RigidBody3D" parent="fun little trinkets" unique_id=982809811]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22432232, 1.18783, 20.457748)
-script = ExtResource("4_625sc")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="fun little trinkets/ball brother 5" unique_id=390121074]
 mesh = SubResource("SphereMesh_r3fl7")
@@ -438,7 +450,6 @@ shape = SubResource("SphereShape3D_jka67")
 
 [node name="ball brother 6" type="RigidBody3D" parent="fun little trinkets" unique_id=1233197620]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11216116, 2.9573975, 17.125673)
-script = ExtResource("4_625sc")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="fun little trinkets/ball brother 6" unique_id=1111651619]
 mesh = SubResource("SphereMesh_r3fl7")
@@ -448,7 +459,6 @@ shape = SubResource("SphereShape3D_jka67")
 
 [node name="ball brother 7" type="RigidBody3D" parent="fun little trinkets" unique_id=1018971792]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22432232, 1.18783, 25.783686)
-script = ExtResource("4_625sc")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="fun little trinkets/ball brother 7" unique_id=550348903]
 mesh = SubResource("SphereMesh_r3fl7")
@@ -458,7 +468,6 @@ shape = SubResource("SphereShape3D_jka67")
 
 [node name="ball brother 8" type="RigidBody3D" parent="fun little trinkets" unique_id=242426841]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11216116, 2.9573975, 22.45161)
-script = ExtResource("4_625sc")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="fun little trinkets/ball brother 8" unique_id=8076292]
 mesh = SubResource("SphereMesh_r3fl7")
@@ -469,7 +478,6 @@ shape = SubResource("SphereShape3D_jka67")
 [node name="basketball" type="RigidBody3D" parent="fun little trinkets" unique_id=1713414358]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05608058, 6.1399975, -7.8786545)
 physics_material_override = SubResource("PhysicsMaterial_jka67")
-script = ExtResource("4_625sc")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="fun little trinkets/basketball" unique_id=922193677]
 material_override = SubResource("StandardMaterial3D_i5arm")
@@ -481,7 +489,6 @@ shape = SubResource("SphereShape3D_jka67")
 [node name="basketball2" type="RigidBody3D" parent="fun little trinkets" unique_id=839480750]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05608058, 3.8240976, -7.8786545)
 physics_material_override = SubResource("PhysicsMaterial_jka67")
-script = ExtResource("4_625sc")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="fun little trinkets/basketball2" unique_id=482407522]
 material_override = SubResource("StandardMaterial3D_i5arm")
@@ -490,11 +497,54 @@ mesh = SubResource("SphereMesh_r3fl7")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/basketball2" unique_id=1533094112]
 shape = SubResource("SphereShape3D_jka67")
 
+[node name="basketball3" type="RigidBody3D" parent="fun little trinkets" unique_id=2143917369]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05608058, 2.059763, -7.8786545)
+physics_material_override = SubResource("PhysicsMaterial_jka67")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="fun little trinkets/basketball3" unique_id=1229225103]
+material_override = SubResource("StandardMaterial3D_i5arm")
+mesh = SubResource("SphereMesh_r3fl7")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/basketball3" unique_id=1246022334]
+shape = SubResource("SphereShape3D_jka67")
+
+[node name="basketcube" type="RigidBody3D" parent="fun little trinkets" unique_id=80695611]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.878527, 2.059763, -7.8786545)
+physics_material_override = SubResource("PhysicsMaterial_ifqa3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="fun little trinkets/basketcube" unique_id=795080556]
+material_override = SubResource("StandardMaterial3D_0p2te")
+mesh = SubResource("BoxMesh_625sc")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/basketcube" unique_id=1852406461]
+shape = SubResource("BoxShape3D_edlrj")
+
+[node name="basketcube2" type="RigidBody3D" parent="fun little trinkets" unique_id=1656547070]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.878527, 5.5780077, -7.8786545)
+physics_material_override = SubResource("PhysicsMaterial_ifqa3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="fun little trinkets/basketcube2" unique_id=32206596]
+material_override = SubResource("StandardMaterial3D_0p2te")
+mesh = SubResource("BoxMesh_625sc")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/basketcube2" unique_id=1583193511]
+shape = SubResource("BoxShape3D_t8kr7")
+
+[node name="basketcube3" type="RigidBody3D" parent="fun little trinkets" unique_id=800447224]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.878527, 8.670002, -7.8786545)
+physics_material_override = SubResource("PhysicsMaterial_ifqa3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="fun little trinkets/basketcube3" unique_id=1163726451]
+material_override = SubResource("StandardMaterial3D_0p2te")
+mesh = SubResource("BoxMesh_625sc")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/basketcube3" unique_id=552666924]
+shape = SubResource("BoxShape3D_v0dq8")
+
 [node name="10kg ball" type="RigidBody3D" parent="fun little trinkets" unique_id=1031122954]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.6300697, 2.059763, -14.979504)
 mass = 10.0
 physics_material_override = SubResource("PhysicsMaterial_jka67")
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/10kg ball" unique_id=1515166511]
 shape = SubResource("SphereShape3D_jka67")
@@ -506,7 +556,6 @@ mesh = SubResource("SphereMesh_i5arm")
 [node name="10kg cube" type="RigidBody3D" parent="fun little trinkets" unique_id=147587192]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9981298, 2.092004, -14.953502)
 mass = 10.0
-script = ExtResource("4_625sc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/10kg cube" unique_id=1593741214]
 shape = SubResource("BoxShape3D_r3fl7")
@@ -515,14 +564,16 @@ shape = SubResource("BoxShape3D_r3fl7")
 material_override = SubResource("StandardMaterial3D_jsk3o")
 mesh = SubResource("BoxMesh_jka67")
 
-[node name="basketball3" type="RigidBody3D" parent="fun little trinkets" unique_id=2143917369]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05608058, 2.059763, -7.8786545)
-physics_material_override = SubResource("PhysicsMaterial_jka67")
-script = ExtResource("4_625sc")
+[node name="RigidBody3D" parent="." unique_id=503926206 instance=ExtResource("4_0p2te")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.18428, 0.57082736, -1.2243738)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="fun little trinkets/basketball3" unique_id=1229225103]
-material_override = SubResource("StandardMaterial3D_i5arm")
-mesh = SubResource("SphereMesh_r3fl7")
+[node name="RigidBody3D2" parent="." unique_id=622463009 instance=ExtResource("5_625sc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4323134, 1.0552254, -5.0734115)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="fun little trinkets/basketball3" unique_id=1246022334]
-shape = SubResource("SphereShape3D_jka67")
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=1943062158]
+
+[node name="RigidBody3D3" parent="." unique_id=781931593 instance=ExtResource("4_0p2te")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.18428, 0.57082736, -8.3349905)
+
+[node name="RigidBody3D4" parent="." unique_id=1982705683 instance=ExtResource("5_625sc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4323134, 1.0552254, -12.184029)

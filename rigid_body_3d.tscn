@@ -1,0 +1,62 @@
+[gd_scene format=3 uid="uid://d0e3mxvkcy3o8"]
+
+[ext_resource type="ArrayMesh" uid="uid://c8wwmfmabaos8" path="res://cube.obj" id="1_n1c64"]
+[ext_resource type="ArrayMesh" uid="uid://wkcox10uv68" path="res://grill.obj" id="2_j8ugh"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_n1c64"]
+frequency = 0.0075
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_j8ugh"]
+width = 83
+height = 318
+generate_mipmaps = false
+noise = SubResource("FastNoiseLite_n1c64")
+normalize = false
+bump_strength = 32.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jc0n7"]
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.54509807, 0.54509807, 0.54509807, 1)
+albedo_texture = SubResource("NoiseTexture2D_j8ugh")
+metallic_specular = 0.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j6w08"]
+resource_local_to_scene = true
+vertex_color_use_as_albedo = true
+albedo_color = Color(0, 1, 1, 1)
+metallic = 1.0
+metallic_specular = 1.0
+emission_enabled = true
+emission = Color(0, 1, 1, 1)
+emission_energy_multiplier = 8.05
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n1c64"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n1c64"]
+vertex_color_use_as_albedo = true
+albedo_color = Color(0, 1, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j8ugh"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_j6w08"]
+
+[node name="RigidBody3D" type="RigidBody3D" unique_id=503926206]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1905127692]
+material_override = SubResource("StandardMaterial3D_jc0n7")
+mesh = ExtResource("1_n1c64")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=441714096]
+transform = Transform3D(0.9391913, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_j6w08")
+mesh = ExtResource("2_j8ugh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=339645449]
+transform = Transform3D(2.015, 0, 0, 0, 2.015, 0, 0, 0, 2.015, 0, 0, 0)
+shape = SubResource("BoxShape3D_n1c64")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="." unique_id=2126823815]
+transform = Transform3D(1.831, 0, 0, 0, 1.725, 0, 0, 0, 1.635, 0.007243097, 0, 0.00031363964)
+material_override = SubResource("StandardMaterial3D_n1c64")
+material_overlay = SubResource("StandardMaterial3D_j8ugh")
+mesh = SubResource("BoxMesh_j6w08")
