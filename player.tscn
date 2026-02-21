@@ -8,6 +8,7 @@ script/source = "extends CharacterBody3D
 @export var sprint_speed := 10.0
 @export var gravity := 9.8
 @export var mouse_sensitivity := 0.002
+@export var controller_look_sensitivity := 3.0  # adjust to taste
 var lowjump := 4.5
 var highjump := 9
 var curjump := 9
@@ -57,6 +58,15 @@ func _input(event):
 		delete_target()
 
 func _physics_process(delta):
+	# Controller right thumbstick camera look
+	var look_x := Input.get_axis(\"look_left\", \"look_right\")
+	var look_y := Input.get_axis(\"look_up\", \"look_down\")
+	if abs(look_x) > 0.1 or abs(look_y) > 0.1:  # deadzone
+		rotate_y(-look_x * controller_look_sensitivity * delta)
+		pitch -= look_y * controller_look_sensitivity * delta
+		pitch = clamp(pitch, -PI/2, PI/2)
+		pivot.rotation.x = pitch
+
 	# Gravity
 	if not is_on_floor():
 		velocity.y -= gravity * delta
@@ -108,7 +118,6 @@ func _try_pickup():
 	var result = get_world_3d().direct_space_state.intersect_ray(query)
 	if result and result.has(\"collider\") and result[\"collider\"] is RigidBody3D:
 		held_object = result[\"collider\"]
-		# CRITICAL: Must use FREEZE_MODE_KINEMATIC so position can be updated while frozen
 		held_object.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
 		held_object.freeze = true
 
@@ -116,8 +125,8 @@ func _drop_object():
 	if not held_object:
 		return
 	held_object.freeze = false
-	held_object.freeze_mode = RigidBody3D.FREEZE_MODE_STATIC  # restore default
-	if pitch > -1:
+	held_object.freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
+	if pitch > 0.01:
 		held_object.linear_velocity = -camera.global_transform.basis.z * pitch * 12
 	held_object = null
 

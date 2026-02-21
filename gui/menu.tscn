@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://dgrtfurg2g8b1" path="res://gui/toQuit.gd" id="4_heart"]
 [ext_resource type="Script" uid="uid://bedqcyefdpibc" path="res://gui/toHome.gd" id="4_ijvwb"]
 [ext_resource type="Texture2D" uid="uid://dpwfe53b0uu6a" path="res://gui/sources/logo.png" id="5_bhqxs"]
+[ext_resource type="Texture2D" uid="uid://bmxa67ubqrkas" path="res://gui/sources/b.png" id="9_bhqxs"]
 
 [sub_resource type="Theme" id="Theme_l48gv"]
 default_font = ExtResource("2_o6i5c")
@@ -57,7 +58,7 @@ allow_unpress = true
 [node name="Menu" type="Node2D" unique_id=1470998918]
 
 [node name="Background" type="Sprite2D" parent="." unique_id=1180878312]
-position = Vector2(2985, -349)
+position = Vector2(2948, -349)
 scale = Vector2(7.898613, 7.8924537)
 texture = ExtResource("1_vd72o")
 
@@ -69,12 +70,12 @@ position_smoothing_speed = 10.0
 editor_draw_screen = false
 
 [node name="Ver string" type="Label" parent="Camera2D" unique_id=169217472]
-offset_left = -1151.0
-offset_top = 602.0
-offset_right = 115.0
-offset_bottom = 861.0
+offset_left = -1152.0
+offset_top = 603.0
+offset_right = 114.0
+offset_bottom = 862.0
 theme = SubResource("Theme_l48gv")
-text = "version a1.0.0"
+text = "version a1.1.0"
 
 [node name="Text" type="Node2D" parent="." unique_id=1721397417]
 position = Vector2(-1088, -591)
@@ -118,12 +119,32 @@ Duplicate object: 1
 Delete object: 0
 Pick up object: E
 Put down object: Q
-
+Enter Supermenu: ESC
 
 Nothing else to say :)"
 label_settings = SubResource("LabelSettings_mae5d")
 
+[node name="Label2" type="Label" parent="Text/Settings" unique_id=2047188413]
+offset_left = 6445.0
+offset_right = 8623.0
+offset_bottom = 973.0
+text = "Controller:
+
+Camera: Right thumbstick
+Move: Left thumbstick, D-Pad
+Jump: B, A, or equivalent
+Sprint: Xbox Y or equivalent
+Super Sprint: Xbox Y + Xbox X
+
+Duplicate object: Left bumper, Click left thumbstick
+Delete object: Right bumper, Click right thumbstick
+Pick up object: Left trigger
+Put down object: Right trigger
+Enter Supermenu: Menu buttons"
+label_settings = SubResource("LabelSettings_mae5d")
+
 [node name="Quit" type="Node2D" parent="Text" unique_id=438473217]
+position = Vector2(5000, 5000)
 
 [node name="Label" type="Label" parent="Text/Quit" unique_id=100717619]
 offset_left = -4985.0
@@ -193,6 +214,7 @@ script = ExtResource("4_ijvwb")
 camera = NodePath("../../../Camera2D")
 
 [node name="Quit" type="Node2D" parent="Buttons" unique_id=13303852]
+position = Vector2(5000, 5000)
 
 [node name="No" type="Button" parent="Buttons/Quit" unique_id=295782283 node_paths=PackedStringArray("camera")]
 offset_left = -4864.0
@@ -240,6 +262,12 @@ show_behind_parent = true
 position = Vector2(-12179, -350)
 scale = Vector2(-7.899, 7.892)
 texture = ExtResource("1_vd72o")
+
+[node name="Background3" type="Sprite2D" parent="." unique_id=437376750]
+show_behind_parent = true
+position = Vector2(184.99997, 6759)
+scale = Vector2(6784.1294, 5899.309)
+texture = ExtResource("9_bhqxs")
 
 [connection signal="pressed" from="Buttons/Main/Play" to="Buttons/Main/Play" method="_on_pressed"]
 [connection signal="pressed" from="Buttons/Main/Options and help" to="Buttons/Main/Options and help" method="_on_pressed"]
