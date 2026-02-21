@@ -7,6 +7,7 @@ It's in the name, the Jolt Physics Godot Sandbox, is a sandbox, made in Godot, w
   2. Custom object creator
   3. Natural feeling pick up and drop controls
   4. Easy duplication and deletion of objects
+  5. Simple third party maps and objects (Beware of malware being spread!)
 
 This project contains code from another repository for the Silly Studios game Gateway.
 
