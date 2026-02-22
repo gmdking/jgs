@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://bd7lgc8d03i5"]
+
+[ext_resource type="Script" uid="uid://bh3jd14wdkfyf" path="res://fb.gd" id="1_q6eq2"]
+[ext_resource type="FontFile" uid="uid://dqb3hg0m3jtce" path="res://gui/sources/Frutiger.ttf" id="2_f85si"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_2nc8q"]
+font = ExtResource("2_f85si")
+font_size = 127
+
+[node name="Control" type="Control" unique_id=511086297]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_q6eq2")
+
+[node name="Label" type="Label" parent="." unique_id=16455625]
+layout_mode = 0
+offset_left = -336.0
+offset_top = -302.0
+offset_right = 265.0
+offset_bottom = -181.0
+text = "Pick a map"
+label_settings = SubResource("LabelSettings_2nc8q")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1729055903]
+
+[node name="Panel" type="Panel" parent="Camera2D" unique_id=566221313]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Camera2D/Panel" unique_id=738688847]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 20.0
+
+[node name="BackButton" type="Button" parent="Camera2D/Panel/VBoxContainer" unique_id=152045801]
+layout_mode = 2
+text = "Back"
+
+[node name="FileList" type="ItemList" parent="Camera2D/Panel/VBoxContainer" unique_id=174751130]
+layout_mode = 2
+auto_width = true
+auto_height = true
