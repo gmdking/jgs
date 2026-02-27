@@ -1,9 +1,9 @@
-extends Button  # or Control if attached to parent
+extends Button  #or control
 
-# Reference to the Camera2D
+#camera it moves
 @export var camera: Camera2D
 
-# Target coordinates
+#target
 @export var target_position := Vector2(0, 0) 
 
 func _ready():

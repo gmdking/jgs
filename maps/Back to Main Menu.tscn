@@ -5,7 +5,6 @@
 [ext_resource type="Script" uid="uid://mw80ah108nvp" path="res://gui/toSettings.gd" id="3_heart"]
 [ext_resource type="Script" uid="uid://d4vktwn7slf8" path="res://gui/play.gd" id="3_ijvwb"]
 [ext_resource type="Script" uid="uid://wkkiuf8mltp2" path="res://gui/quit.gd" id="3_o6i5c"]
-[ext_resource type="AudioStream" uid="uid://dhtsbbv3sphmj" path="res://gui/sources/click1.wav" id="4_axa2f"]
 [ext_resource type="Script" uid="uid://dgrtfurg2g8b1" path="res://gui/toQuit.gd" id="4_heart"]
 [ext_resource type="Script" uid="uid://bedqcyefdpibc" path="res://gui/toHome.gd" id="4_ijvwb"]
 [ext_resource type="Texture2D" uid="uid://dpwfe53b0uu6a" path="res://gui/sources/logo.png" id="5_bhqxs"]
@@ -77,7 +76,7 @@ offset_top = 603.0
 offset_right = 114.0
 offset_bottom = 862.0
 theme = SubResource("Theme_l48gv")
-text = "version a1.1.0"
+text = "version a2.0.0"
 
 [node name="Text" type="Node2D" parent="." unique_id=1721397417]
 position = Vector2(-1088, -591)
@@ -180,10 +179,6 @@ text = "Play"
 autowrap_mode = 2
 script = ExtResource("3_ijvwb")
 
-[node name="Hover" type="AudioStreamPlayer2D" parent="Buttons/Main/Play" unique_id=751144874]
-stream = ExtResource("4_axa2f")
-volume_db = -6.005
-
 [node name="Click" type="AudioStreamPlayer2D" parent="Buttons/Main/Play" unique_id=264115631]
 stream = ExtResource("5_t4cgj")
 
@@ -201,13 +196,6 @@ autowrap_trim_flags = 0
 script = ExtResource("3_heart")
 camera = NodePath("../../../Camera2D")
 
-[node name="Hover" type="AudioStreamPlayer2D" parent="Buttons/Main/Options and help" unique_id=1347986873]
-stream = ExtResource("4_axa2f")
-volume_db = -6.005
-
-[node name="Click" type="AudioStreamPlayer2D" parent="Buttons/Main/Options and help" unique_id=1707823219]
-stream = ExtResource("5_t4cgj")
-
 [node name="Quit" type="Button" parent="Buttons/Main" unique_id=1739273326 node_paths=PackedStringArray("camera")]
 offset_left = -537.0
 offset_top = 130.0
@@ -221,13 +209,6 @@ autowrap_mode = 3
 autowrap_trim_flags = 0
 script = ExtResource("4_heart")
 camera = NodePath("../../../Camera2D")
-
-[node name="Hover" type="AudioStreamPlayer2D" parent="Buttons/Main/Quit" unique_id=314208649]
-stream = ExtResource("4_axa2f")
-volume_db = -6.005
-
-[node name="Click" type="AudioStreamPlayer2D" parent="Buttons/Main/Quit" unique_id=1441710668]
-stream = ExtResource("5_t4cgj")
 
 [node name="Settings" type="Node2D" parent="Buttons" unique_id=595602597]
 
@@ -243,13 +224,6 @@ autowrap_mode = 3
 autowrap_trim_flags = 0
 script = ExtResource("4_ijvwb")
 camera = NodePath("../../../Camera2D")
-
-[node name="Hover" type="AudioStreamPlayer2D" parent="Buttons/Settings/Back" unique_id=1934692633]
-stream = ExtResource("4_axa2f")
-volume_db = -6.005
-
-[node name="Click" type="AudioStreamPlayer2D" parent="Buttons/Settings/Back" unique_id=1497920170]
-stream = ExtResource("5_t4cgj")
 
 [node name="Quit" type="Node2D" parent="Buttons" unique_id=13303852]
 position = Vector2(5000, 5000)
@@ -267,13 +241,6 @@ autowrap_trim_flags = 0
 script = ExtResource("4_ijvwb")
 camera = NodePath("../../../Camera2D")
 
-[node name="Hover" type="AudioStreamPlayer2D" parent="Buttons/Quit/No" unique_id=1098309033]
-stream = ExtResource("4_axa2f")
-volume_db = -6.005
-
-[node name="Click" type="AudioStreamPlayer2D" parent="Buttons/Quit/No" unique_id=1228695264]
-stream = ExtResource("5_t4cgj")
-
 [node name="Yes" type="Button" parent="Buttons/Quit" unique_id=1325438971]
 offset_left = -5443.0
 offset_top = 128.0
@@ -286,28 +253,12 @@ autowrap_mode = 3
 autowrap_trim_flags = 0
 script = ExtResource("3_o6i5c")
 
-[node name="Hover" type="AudioStreamPlayer2D" parent="Buttons/Quit/Yes" unique_id=608667537]
-stream = ExtResource("4_axa2f")
-volume_db = -6.005
-
-[node name="Click" type="AudioStreamPlayer2D" parent="Buttons/Quit/Yes" unique_id=1116284078]
-stream = ExtResource("5_t4cgj")
-
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1118203394]
 texture_filter = 1
 texture_repeat = 1
 position = Vector2(-528, -456)
 scale = Vector2(6, 6)
 texture = ExtResource("5_bhqxs")
-
-[node name="Camera2D2" type="Camera2D" parent="." unique_id=1718401110]
-position = Vector2(-5000, 0)
-ignore_rotation = false
-enabled = false
-zoom = Vector2(0.5, 0.5)
-process_callback = 0
-position_smoothing_speed = 10.0
-editor_draw_limits = true
 
 [node name="Background2" type="Sprite2D" parent="." unique_id=1964076434]
 show_behind_parent = true
