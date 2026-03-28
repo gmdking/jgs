@@ -36,7 +36,7 @@ shadow_color = Color(0, 0, 0, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_mae5d"]
 font = ExtResource("2_o6i5c")
-font_size = 60
+font_size = 49
 shadow_size = 6
 shadow_color = Color(0, 0, 0, 1)
 
@@ -84,10 +84,10 @@ position = Vector2(-1088, -591)
 [node name="Main" type="Node2D" parent="Text" unique_id=152776205]
 
 [node name="JGS" type="Label" parent="Text/Main" unique_id=1078915941]
-offset_left = 4.0
-offset_top = -3.0
-offset_right = 478.0
-offset_bottom = 252.0
+offset_left = -3.0
+offset_top = 13.0
+offset_right = 471.0
+offset_bottom = 268.0
 tooltip_text = "SCRAM"
 theme = SubResource("Theme_4hy44")
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
@@ -120,18 +120,19 @@ Super Sprint: Shift + Ctrl
 
 Duplicate object: 1
 Delete object: 0
-Pick up object: E
-Put down object: Q
+Pick up object: E, Left Mouse Click
+Put down object: Q, Right Mouse Click
+Scale object: Scroll wheel, up+down
 Enter Supermenu: ESC
 
 Nothing else to say :)"
 label_settings = SubResource("LabelSettings_mae5d")
 
 [node name="Controller" type="Label" parent="Text/Settings" unique_id=2047188413]
-offset_left = 6277.0
-offset_top = 8.0
-offset_right = 8455.0
-offset_bottom = 798.0
+offset_left = 5852.0
+offset_top = 16.0
+offset_right = 8030.0
+offset_bottom = 806.0
 text = "Controller:
 
 Camera: Right thumbstick
@@ -144,6 +145,7 @@ Duplicate object: Left bumper, Click left thumbstick
 Delete object: Right bumper, Click right thumbstick
 Pick up object: Left trigger
 Put down object: Right trigger
+Scale object: Dpad, UP + DOWN
 Enter Supermenu: Menu buttons"
 label_settings = SubResource("LabelSettings_mae5d")
 
@@ -256,8 +258,8 @@ script = ExtResource("3_o6i5c")
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1118203394]
 texture_filter = 1
 texture_repeat = 1
-position = Vector2(-528, -456)
-scale = Vector2(6, 6)
+position = Vector2(-939.99994, -249)
+scale = Vector2(6.1875, 6.390625)
 texture = ExtResource("5_bhqxs")
 
 [node name="Background2" type="Sprite2D" parent="." unique_id=1964076434]

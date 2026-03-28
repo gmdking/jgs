@@ -23,12 +23,13 @@ var walk_speed := 5.0
 @onready var pivot = $CameraPivot
 @onready var camera: Camera3D = $CameraPivot/Camera3D
 @onready var ray: RayCast3D = $CameraPivot/Camera3D/InteractRay
+@onready var spawn_point = $CameraPivot/Camera3D/Marker3D
 # varied variables that get varied later on
 var held_object: RigidBody3D = null
 var pitch := 0.0
 var wants_pickup := false
 var wants_drop := false
-
+var menu_open = false
 # lock cursor to screen, enable raycast
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -44,8 +45,8 @@ func _input(event):
 		pivot.rotation.x = pitch
 	#removing soon, pause sends you straight to the menu, will switch with supermenu (not yet existent)
 	if event.is_action_pressed(\"pause\"):
-		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		get_tree().change_scene_to_file(\"res://gui/fb.tscn\")
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	#self explanatory
 	if event.is_action_pressed(pickup_key):
 		wants_pickup = true
@@ -115,13 +116,14 @@ func _physics_process(delta):
 			var target = ray.get_collider()
 			if target is RigidBody3D:
 				target.scale *= 1.1
+				target.mass *= 1.1
 	#scale down
 	if Input.is_action_just_pressed(\"scaledown\"):
 		if ray.is_colliding():
 			var target = ray.get_collider()
 			if target is RigidBody3D:
 				target.scale *= 0.9
-				
+				target.mass *= 0.9
 				
 func _try_pickup():
 	#most of this is self explanatory
@@ -177,15 +179,11 @@ func delete_target():
 	if target == held_object:
 		held_object = null
 	target.queue_free()
-
-#i love gdscript
 "
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_jka67"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_i5arm"]
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4flbx"]
 
 [node name="CharacterBody3D" type="CharacterBody3D" unique_id=516576517]
 floor_max_angle = 1.0471976
@@ -213,6 +211,9 @@ alpha_hash_scale = 0.0
 texture_filter = 0
 texture = ExtResource("1_4flbx")
 
+[node name="Marker3D" type="Marker3D" parent="CameraPivot/Camera3D" unique_id=25498469]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.079, 0.3, -3.0223656)
+
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1966873946]
 transform = Transform3D(0.98916286, 0, 0, 0, 0.98887503, 0, 0, 0, 0.9892592, 0, 0, 0)
 layers = 2
@@ -220,12 +221,3 @@ mesh = SubResource("CapsuleMesh_jka67")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=596483658]
 shape = SubResource("CapsuleShape3D_i5arm")
-
-[node name="RigidBody3D" type="RigidBody3D" parent="." unique_id=1499146403]
-collision_priority = 2.0
-input_ray_pickable = false
-mass = 70.0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D" unique_id=1162027308]
-transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 0, 0, 0)
-shape = SubResource("CapsuleShape3D_4flbx")

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bd7lgc8d03i5"]
 
-[ext_resource type="Script" uid="uid://bh3jd14wdkfyf" path="res://fb.gd" id="1_q6eq2"]
+[ext_resource type="Script" uid="uid://bh3jd14wdkfyf" path="res://gui/fb.gd" id="1_q6eq2"]
 [ext_resource type="FontFile" uid="uid://dqb3hg0m3jtce" path="res://gui/sources/Frutiger.ttf" id="2_f85si"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_2nc8q"]
@@ -20,6 +20,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
+offset_left = -47.0
+offset_top = -106.0
+offset_right = -47.0
+offset_bottom = -106.0
 grow_horizontal = 2
 grow_vertical = 2
 
