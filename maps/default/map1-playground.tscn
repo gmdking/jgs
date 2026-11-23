@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bc2g5h7o4bb6k"]
 
-[ext_resource type="PackedScene" uid="uid://d244xj6tgryu" path="res://gui/smenu/smenu.tscn" id="1_hgl33"]
+[ext_resource type="PackedScene" uid="uid://d244xj6tgryu" path="res://gui/smenu.tscn" id="1_hgl33"]
 [ext_resource type="PackedScene" uid="uid://cl18cmhalcs4a" path="res://objects/default/ball.tscn" id="1_olsx1"]
 [ext_resource type="PackedScene" uid="uid://5ccq1c670sed" path="res://objects/default/basketball.tscn" id="2_w2l8p"]
 [ext_resource type="PackedScene" uid="uid://deny75gqppai" path="res://objects/default/basketcube.tscn" id="3_ggybe"]

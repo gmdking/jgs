@@ -1,15 +1,15 @@
 [gd_scene format=3 uid="uid://d244xj6tgryu"]
 
-[ext_resource type="Script" uid="uid://cc7qf2xqtb5g3" path="res://gui/smenu/smenu.gd" id="1_e01je"]
-[ext_resource type="AudioStream" uid="uid://cnu314rra7fgo" path="res://gui/sources/Project_3.ogg" id="2_1rvh1"]
+[ext_resource type="Script" uid="uid://cc7qf2xqtb5g3" path="res://gui/scripts/smenu.gd" id="1_sist8"]
+[ext_resource type="AudioStream" uid="uid://cnu314rra7fgo" path="res://gui/sources/Project_3.ogg" id="2_n3db6"]
 
 [node name="Smenu" type="CanvasLayer" unique_id=1070106664]
 process_mode = 3
 layer = 5
-script = ExtResource("1_e01je")
+script = ExtResource("1_sist8")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1078050351]
-stream = ExtResource("2_1rvh1")
+stream = ExtResource("2_n3db6")
 
 [node name="PanelContainer" type="PanelContainer" parent="." unique_id=782665365]
 process_mode = 3

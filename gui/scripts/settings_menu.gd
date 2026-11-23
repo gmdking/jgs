@@ -124,17 +124,12 @@ func _build_audio_tab(parent: Control) -> void:
 	_add_slider(parent, "Sound effects", "sfx_volume", 0.0, 1.0, 0.01, "%")
 	_add_check(parent, "Mute all audio", "mute")
 
-	var note := Label.new()
-	note.text = "Music uses the Music bus; UI and gameplay effects use the SFX bus."
-	note.add_theme_color_override("font_color", Color(0.7, 0.75, 0.85))
-	parent.add_child(note)
-
 
 func _build_graphics_tab(parent: Control) -> void:
 	_add_section(parent, "Renderer")
 	_add_option(parent, "Rendering method", "renderer", ["Forward+", "Mobile", "Compatibility"], ["forward_plus", "mobile", "gl_compatibility"])
 	var restart_note := Label.new()
-	restart_note.text = "Renderer changes are saved to the project and require a restart."
+	restart_note.text = "Renderer changes require a restart."
 	restart_note.add_theme_color_override("font_color", Color(0.7, 0.75, 0.85))
 	parent.add_child(restart_note)
 
@@ -176,21 +171,21 @@ func _build_graphics_tab(parent: Control) -> void:
 func _build_customization_tab(parent: Control) -> void:
 	_add_section(parent, "Crosshair")
 	_add_option(parent, "Style", "crosshair_style", CROSSHAIR_STYLES)
-	_add_check(parent, "Invert colors (Minecraft-style)", "crosshair_inverted")
+	_add_check(parent, "Invert colors (Nullifies your color!)", "crosshair_inverted")
 	_add_color(parent, "Color", "crosshair_color")
 	_add_slider(parent, "Size", "crosshair_size", 2.0, 64.0, 1.0, "px")
 	_add_slider(parent, "Thickness", "crosshair_thickness", 1.0, 8.0, 1.0, "px")
 	_add_slider(parent, "Center gap", "crosshair_gap", 0.0, 32.0, 1.0, "px")
 
 	var note := Label.new()
-	note.text = "Inverted mode ignores the custom color and flips whatever is behind the crosshair. Choose 'Off' to hide it. It is also hidden in menus and while paused."
+	note.text = "Choose 'Off' as your crosshair to hide it."
 	note.add_theme_color_override("font_color", Color(0.7, 0.75, 0.85))
 	parent.add_child(note)
 
 
 func _build_controls_tab(parent: Control) -> void:
 	var info := Label.new()
-	info.text = "Select an action, then press any key, mouse button, or controller input. Esc cancels."
+	info.text = "Select an action, then press any key, mouse button, or controller input. To cancel the input selection, press ESC."
 	info.add_theme_color_override("font_color", Color(0.7, 0.75, 0.85))
 	parent.add_child(info)
 

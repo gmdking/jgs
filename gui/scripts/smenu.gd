@@ -148,4 +148,4 @@ func _on_button_2_pressed() -> void:
 	settings_ui.hide_settings()
 	get_tree().paused = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	get_tree().change_scene_to_file("res://maps/Back to Main Menu.tscn")
+	get_tree().change_scene_to_file("res://gui/menu.tscn")

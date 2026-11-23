@@ -13,7 +13,7 @@ func _ready() -> void:
 	layer = 20
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
-	var shader := load("res://gui/crosshair.gdshader") as Shader
+	var shader := load("res://gui/scripts/crosshair.gdshader") as Shader
 	shader_material = ShaderMaterial.new()
 	shader_material.shader = shader
 

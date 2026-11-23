@@ -87,3 +87,7 @@ func _on_button_focused():
 
 func update_back_button():
 	back_button.disabled = current_path == ROOT_PATH
+
+
+func _on_main_menu_button_pressed() -> void:
+	get_tree().change_scene_to_file("res://gui/menu.tscn")

@@ -5,6 +5,7 @@ extends Node
 signal changed(key: String, value: Variant)
 
 const CONFIG_PATH := "user://settings.cfg"
+const OVERRIDE_PATH := "res://override.cfg"
 
 const DEFAULTS := {
 	"music_volume": 0.8,
@@ -106,16 +107,14 @@ func apply_audio() -> void:
 
 
 func apply_graphics() -> void:
-	# The renderer can only be selected before the engine boots, so persist the
-	# project setting and let the UI tell the player to restart.
+	# The renderer can only be selected before the engine boots, so persist it
+	# and let the UI tell the player to restart.
 	var renderer_methods := ["forward_plus", "mobile", "gl_compatibility"]
 	var renderer := str(get_value("renderer"))
 	if not renderer_methods.has(renderer):
 		renderer = "forward_plus"
 	if str(ProjectSettings.get_setting("rendering/renderer/rendering_method", renderer)) != renderer:
-		ProjectSettings.set_setting("rendering/renderer/rendering_method", renderer)
-		# override.cfg is read at boot and works in exported builds too.
-		ProjectSettings.save_custom("res://override.cfg")
+		_write_renderer_override(renderer)
 
 	var modes := [
 		DisplayServer.WINDOW_MODE_WINDOWED,
@@ -158,6 +157,19 @@ func apply_graphics() -> void:
 
 	_apply_world_environment()
 	_apply_shadows()
+
+
+# Writes ONLY the renderer choice to override.cfg. ProjectSettings.save_custom()
+# would dump a snapshot of every project setting (autoload paths, input map,
+# etc.) and silently override project.godot with stale values after any edit.
+# Note: res:// is read-only in exported builds, so this only persists from the
+# editor; the failure is harmless.
+func _write_renderer_override(renderer: String) -> void:
+	var override := ConfigFile.new()
+	override.set_value("rendering", "renderer/rendering_method", renderer)
+	var err := override.save(OVERRIDE_PATH)
+	if err != OK:
+		push_warning("Could not save %s (error %d); renderer change will not persist." % [OVERRIDE_PATH, err])
 
 
 func _resolution_size(value: String) -> Vector2i:
@@ -328,7 +340,7 @@ func _load() -> void:
 	# Older configs stored resolution and fps limit as option indexes. Convert
 	# them to real values once so typed/custom entries work going forward.
 	if int(config.get_value("settings", "config_version", 1)) < 2:
-		var legacy_fps := [0, 30, 60, 120, 144, 240]
+		var legacy_fps := [0, 24, 30, 60, 120, 144, 240, 360, 480]
 		var fps_index := int(values.get("fps_limit", 0))
 		if fps_index >= 0 and fps_index < legacy_fps.size():
 			values["fps_limit"] = legacy_fps[fps_index]
