@@ -24,6 +24,7 @@ UISounds="*res://gui/scripts/ui_sounds.gd"
 SettingsUI="*res://gui/scripts/settings_menu.gd"
 Crosshair="*res://gui/scripts/crosshair.gd"
 DebugMenu="*res://autoload/debug_menu.gd"
+Discord="*uid://dm7naatl1whbq"
 
 [display]
 
