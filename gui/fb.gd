@@ -3,12 +3,16 @@ extends Control
 #file browser, quite cool! pretty self explanatory throughout
 @onready var file_list: ItemList = $Camera2D/Panel/VBoxContainer/FileList
 @onready var back_button: Button = $Camera2D/Panel/VBoxContainer/BackButton
+@onready var ui_sounds: Variant = get_node("/root/UISounds")
 const ROOT_PATH := "res://maps/"
 var current_path := ROOT_PATH
 
 func _ready():
 	file_list.item_activated.connect(_on_item_activated)
 	back_button.pressed.connect(_on_back_pressed)
+	back_button.focus_entered.connect(_on_button_focused)
+	back_button.mouse_entered.connect(_on_button_focused)
+	file_list.mouse_entered.connect(_on_button_focused)
 	load_directory(current_path)
 
 func load_directory(path: String):
@@ -45,6 +49,7 @@ func load_directory(path: String):
 	update_back_button()
 
 func _on_item_activated(index: int):
+	ui_sounds.play_click()
 	var text := file_list.get_item_text(index)
 
 	if text.begins_with("📁 "):
@@ -62,6 +67,7 @@ func _on_item_activated(index: int):
 
 
 func _on_back_pressed():
+	ui_sounds.play_click()
 	if current_path == ROOT_PATH:
 		return
 
@@ -75,6 +81,9 @@ func _on_back_pressed():
 
 	load_directory(current_path)
 
+
+func _on_button_focused():
+	ui_sounds.play_hover()
 
 func update_back_button():
 	back_button.disabled = current_path == ROOT_PATH

@@ -12,17 +12,29 @@ config_version=5
 
 config/name="JGS"
 run/main_scene="uid://c15qrd2w5kk6l"
-config/features=PackedStringArray("4.6", "Forward Plus")
+config/features=PackedStringArray("4.7", "Forward Plus")
 boot_splash/use_filter=false
 boot_splash/image="uid://dpwfe53b0uu6a"
 config/icon="uid://dpwfe53b0uu6a"
-boot_splash/minimum_display_time=1000
+
+[autoload]
+
+Settings="*res://gui/settings.gd"
+UISounds="*res://gui/ui_sounds.gd"
+SettingsUI="*res://gui/settings_menu.gd"
+Crosshair="*res://gui/crosshair.gd"
+DebugMenu="*res://autoload/debug_menu.gd"
+Discord="*uid://dm7naatl1whbq"
 
 [display]
 
 window/size/mode=3
 window/vsync/vsync_mode=2
 mouse_cursor/custom_image="res://gui/sources/cursor.png"
+
+[dotnet]
+
+project/assembly_name="JGS"
 
 [editor_plugins]
 

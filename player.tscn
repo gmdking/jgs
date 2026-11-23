@@ -1,7 +1,5 @@
 [gd_scene format=3 uid="uid://buop7fppn5oe4"]
 
-[ext_resource type="Texture2D" uid="uid://b6r3yl64wttfx" path="res://gui/sources/cross.png" id="1_4flbx"]
-
 [sub_resource type="GDScript" id="GDScript_4xowi"]
 script/source = "extends CharacterBody3D
 #dear god....
@@ -33,6 +31,10 @@ var menu_open = false
 # lock cursor to screen, enable raycast
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	if has_node(\"/root/Settings\"):
+		var s: Variant = get_node(\"/root/Settings\")
+		mouse_sensitivity = float(s.get_value(\"mouse_sensitivity\", mouse_sensitivity))
+		controller_look_sensitivity = float(s.get_value(\"controller_sensitivity\", controller_look_sensitivity))
 	if ray:
 		ray.enabled = true
 
@@ -43,10 +45,6 @@ func _input(event):
 		pitch -= event.relative.y * mouse_sensitivity
 		pitch = clamp(pitch, -PI/2, PI/2)
 		pivot.rotation.x = pitch
-	#removing soon, pause sends you straight to the menu, will switch with supermenu (not yet existent)
-	if event.is_action_pressed(\"pause\"):
-		get_tree().change_scene_to_file(\"res://gui/fb.tscn\")
-		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	#self explanatory
 	if event.is_action_pressed(pickup_key):
 		wants_pickup = true
@@ -200,16 +198,6 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0
 target_position = Vector3(0, -5, 0)
 collide_with_areas = true
 debug_shape_thickness = 5
-
-[node name="Sprite3D" type="Sprite3D" parent="CameraPivot/Camera3D" unique_id=528329506]
-transform = Transform3D(0.050000004, 0, -9.313226e-10, 0, 0.05, 0, 9.313226e-10, 0, 0.050000004, 0, 0, -0.099999994)
-billboard = 1
-double_sided = false
-no_depth_test = true
-alpha_scissor_threshold = 0.0
-alpha_hash_scale = 0.0
-texture_filter = 0
-texture = ExtResource("1_4flbx")
 
 [node name="Marker3D" type="Marker3D" parent="CameraPivot/Camera3D" unique_id=25498469]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.079, 0.3, -3.0223656)

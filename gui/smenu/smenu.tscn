@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://d244xj6tgryu"]
+
+[ext_resource type="Script" uid="uid://cc7qf2xqtb5g3" path="res://gui/smenu/smenu.gd" id="1_e01je"]
+[ext_resource type="AudioStream" uid="uid://cnu314rra7fgo" path="res://gui/sources/Project_3.ogg" id="2_1rvh1"]
+
+[node name="Smenu" type="CanvasLayer" unique_id=1070106664]
+process_mode = 3
+layer = 5
+script = ExtResource("1_e01je")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1078050351]
+stream = ExtResource("2_1rvh1")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=782665365]
+process_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -430.0
+offset_top = -192.5
+offset_right = 430.0
+offset_bottom = 192.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=1477721665]
+layout_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="PanelContainer/VBoxContainer" unique_id=1958441099]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer" unique_id=1350303964]
+layout_mode = 2
+text = "Paused"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/VBoxContainer" unique_id=1265415455]
+layout_mode = 2
+
+[node name="Resume" type="Button" parent="PanelContainer/VBoxContainer" unique_id=1448182694]
+layout_mode = 2
+text = "Resume"
+
+[node name="SettingsButton" type="Button" parent="PanelContainer/VBoxContainer" unique_id=1301867900]
+layout_mode = 2
+text = "Settings"
+
+[node name="MainMenu" type="Button" parent="PanelContainer/VBoxContainer" unique_id=215890937]
+layout_mode = 2
+text = "Main Menu"
+
+[node name="HSeparator3" type="HSeparator" parent="PanelContainer/VBoxContainer" unique_id=1592411247]
+layout_mode = 2
+
+[node name="SuperMenu" type="Button" parent="PanelContainer/VBoxContainer" unique_id=28289466]
+layout_mode = 2
+tooltip_text = "Coming Soon! This menu will allow you to create custom objects and items, with their own models, collision, scripts, and more! Hell, we might even add a map maker! PROCEDURALLY GENERATED MAPS?? SURVIVAL MODE??"
+disabled = true
+text = "Enter Supermenu"
+
+[connection signal="pressed" from="PanelContainer/VBoxContainer/Resume" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/MainMenu" to="." method="_on_button_2_pressed"]

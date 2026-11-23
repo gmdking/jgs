@@ -7,7 +7,7 @@
 font = ExtResource("2_f85si")
 font_size = 127
 
-[node name="Control" type="Control" unique_id=511086297]
+[node name="Picking a map" type="Control" unique_id=511086297]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_q6eq2")

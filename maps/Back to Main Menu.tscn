@@ -1,13 +1,10 @@
 [gd_scene format=3 uid="uid://c15qrd2w5kk6l"]
 
+[ext_resource type="Script" uid="uid://dt2kx7etvbctx" path="res://gui/main_menu.gd" id="1_menu"]
 [ext_resource type="Texture2D" uid="uid://beixcu66i5apy" path="res://gui/sources/background.png" id="1_vd72o"]
 [ext_resource type="FontFile" uid="uid://dqb3hg0m3jtce" path="res://gui/sources/Frutiger.ttf" id="2_o6i5c"]
-[ext_resource type="Script" uid="uid://mw80ah108nvp" path="res://gui/toSettings.gd" id="3_heart"]
-[ext_resource type="Script" uid="uid://d4vktwn7slf8" path="res://gui/play.gd" id="3_ijvwb"]
-[ext_resource type="Script" uid="uid://wkkiuf8mltp2" path="res://gui/quit.gd" id="3_o6i5c"]
-[ext_resource type="Script" uid="uid://dgrtfurg2g8b1" path="res://gui/toQuit.gd" id="4_heart"]
-[ext_resource type="Script" uid="uid://bedqcyefdpibc" path="res://gui/toHome.gd" id="4_ijvwb"]
 [ext_resource type="Texture2D" uid="uid://dpwfe53b0uu6a" path="res://gui/sources/logo.png" id="5_bhqxs"]
+[ext_resource type="AudioStream" uid="uid://dhtsbbv3sphmj" path="res://gui/sources/click1.wav" id="5_nx617"]
 [ext_resource type="AudioStream" uid="uid://cwljgeeuatal" path="res://gui/sources/click2.wav" id="5_t4cgj"]
 [ext_resource type="Texture2D" uid="uid://bmxa67ubqrkas" path="res://gui/sources/b.png" id="9_bhqxs"]
 
@@ -56,7 +53,8 @@ default_font_size = 71
 [sub_resource type="ButtonGroup" id="ButtonGroup_heart"]
 allow_unpress = true
 
-[node name="Menu" type="Node2D" unique_id=1470998918]
+[node name="Main Menu" type="Node2D" unique_id=1470998918]
+script = ExtResource("1_menu")
 
 [node name="Background" type="Sprite2D" parent="." unique_id=1180878312]
 position = Vector2(2948, -349)
@@ -76,7 +74,7 @@ offset_top = 603.0
 offset_right = 114.0
 offset_bottom = 862.0
 theme = SubResource("Theme_l48gv")
-text = "version a2.0.0"
+text = "version b1.0.0."
 
 [node name="Text" type="Node2D" parent="." unique_id=1721397417]
 position = Vector2(-1088, -591)
@@ -173,18 +171,18 @@ offset_top = 129.0
 offset_right = 161.0
 offset_bottom = 385.0
 tooltip_text = "Pick a map and start playing!"
-focus_neighbor_left = NodePath("../Quit")
-focus_neighbor_right = NodePath("../Options and help")
 theme = SubResource("Theme_ouk20")
 button_group = SubResource("ButtonGroup_heart")
 text = "Play"
 autowrap_mode = 2
-script = ExtResource("3_ijvwb")
 
-[node name="Click" type="AudioStreamPlayer2D" parent="Buttons/Main/Play" unique_id=264115631]
+[node name="Click" type="AudioStreamPlayer" parent="Buttons/Main/Play" unique_id=264115631]
 stream = ExtResource("5_t4cgj")
 
-[node name="Options and help" type="Button" parent="Buttons/Main" unique_id=237365145 node_paths=PackedStringArray("camera")]
+[node name="Hover" type="AudioStreamPlayer" parent="Buttons/Main/Play" unique_id=1371758477]
+stream = ExtResource("5_nx617")
+
+[node name="Options and help" type="Button" parent="Buttons/Main" unique_id=237365145]
 offset_left = 225.0
 offset_top = 130.0
 offset_right = 545.0
@@ -195,10 +193,8 @@ button_group = SubResource("ButtonGroup_heart")
 text = "Options and Help"
 autowrap_mode = 3
 autowrap_trim_flags = 0
-script = ExtResource("3_heart")
-camera = NodePath("../../../Camera2D")
 
-[node name="Quit" type="Button" parent="Buttons/Main" unique_id=1739273326 node_paths=PackedStringArray("camera")]
+[node name="Quit" type="Button" parent="Buttons/Main" unique_id=1739273326]
 offset_left = -537.0
 offset_top = 130.0
 offset_right = -217.0
@@ -209,12 +205,10 @@ button_group = SubResource("ButtonGroup_heart")
 text = "Quit"
 autowrap_mode = 3
 autowrap_trim_flags = 0
-script = ExtResource("4_heart")
-camera = NodePath("../../../Camera2D")
 
 [node name="Settings" type="Node2D" parent="Buttons" unique_id=595602597]
 
-[node name="Back" type="Button" parent="Buttons/Settings" unique_id=1413082344 node_paths=PackedStringArray("camera")]
+[node name="Back" type="Button" parent="Buttons/Settings" unique_id=1413082344]
 offset_left = 4872.0
 offset_top = 130.0
 offset_right = 5192.0
@@ -224,13 +218,11 @@ button_group = SubResource("ButtonGroup_heart")
 text = "Back"
 autowrap_mode = 3
 autowrap_trim_flags = 0
-script = ExtResource("4_ijvwb")
-camera = NodePath("../../../Camera2D")
 
 [node name="Quit" type="Node2D" parent="Buttons" unique_id=13303852]
 position = Vector2(5000, 5000)
 
-[node name="No" type="Button" parent="Buttons/Quit" unique_id=295782283 node_paths=PackedStringArray("camera")]
+[node name="No" type="Button" parent="Buttons/Quit" unique_id=295782283]
 offset_left = -4864.0
 offset_top = 128.0
 offset_right = -4544.0
@@ -240,8 +232,6 @@ button_group = SubResource("ButtonGroup_heart")
 text = "No"
 autowrap_mode = 3
 autowrap_trim_flags = 0
-script = ExtResource("4_ijvwb")
-camera = NodePath("../../../Camera2D")
 
 [node name="Yes" type="Button" parent="Buttons/Quit" unique_id=1325438971]
 offset_left = -5443.0
@@ -253,7 +243,6 @@ button_group = SubResource("ButtonGroup_heart")
 text = "Yes"
 autowrap_mode = 3
 autowrap_trim_flags = 0
-script = ExtResource("3_o6i5c")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1118203394]
 texture_filter = 1
@@ -273,12 +262,3 @@ show_behind_parent = true
 position = Vector2(184.99997, 6759)
 scale = Vector2(6784.1294, 5899.309)
 texture = ExtResource("9_bhqxs")
-
-[connection signal="focus_entered" from="Buttons/Main/Play" to="Buttons/Main/Play" method="_on_focus_entered"]
-[connection signal="mouse_entered" from="Buttons/Main/Play" to="Buttons/Main/Play" method="_on_mouse_entered"]
-[connection signal="pressed" from="Buttons/Main/Play" to="Buttons/Main/Play" method="_on_pressed"]
-[connection signal="pressed" from="Buttons/Main/Options and help" to="Buttons/Main/Options and help" method="_on_pressed"]
-[connection signal="pressed" from="Buttons/Main/Quit" to="Buttons/Main/Quit" method="_on_pressed"]
-[connection signal="pressed" from="Buttons/Settings/Back" to="Buttons/Settings/Back" method="_on_pressed"]
-[connection signal="pressed" from="Buttons/Quit/No" to="Buttons/Quit/No" method="_on_pressed"]
-[connection signal="pressed" from="Buttons/Quit/Yes" to="Buttons/Quit/Yes" method="_on_pressed"]

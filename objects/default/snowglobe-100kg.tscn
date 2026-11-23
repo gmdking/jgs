@@ -1,0 +1,471 @@
+[gd_scene format=3 uid="uid://tkxlsm8ybobj"]
+
+[ext_resource type="Material" uid="uid://13kn5hb233jm" path="res://objectdependencies/wood.tres" id="1_wood"]
+[ext_resource type="Material" uid="uid://cprs6aqcmdq4n" path="res://objectdependencies/glass.tres" id="2_glass"]
+[ext_resource type="Script" uid="uid://xspx8g2bdcae" path="res://objectdependencies/hollow_sphere_shell.gd" id="3_shell"]
+[ext_resource type="PackedScene" uid="uid://c4gvkbeh6s5e5" path="res://objectdependencies/JGCube.glb" id="4_jgcube"]
+[ext_resource type="PackedScene" uid="uid://cuo2q71h0bohb" path="res://objectdependencies/JGOrb.glb" id="5_jgorb"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_outer"]
+radius = 3.2446697
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_base"]
+height = 1.2666931
+radius = 3.35
+
+[sub_resource type="SphereMesh" id="SphereMesh_glass"]
+material = ExtResource("2_glass")
+radius = 3.2446697
+height = 6.4893394
+radial_segments = 48
+rings = 24
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_base"]
+material = ExtResource("1_wood")
+top_radius = 3.15
+bottom_radius = 3.4
+height = 1.125
+radial_segments = 48
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_snow"]
+friction = 0.9
+bounce = 0.05
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_flake"]
+radius = 0.075
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_snow"]
+albedo_color = Color(0.94, 0.97, 1, 1)
+roughness = 0.85
+
+[sub_resource type="SphereMesh" id="SphereMesh_flake"]
+material = SubResource("StandardMaterial3D_snow")
+radius = 0.075
+height = 0.15
+radial_segments = 8
+rings = 4
+
+[sub_resource type="SphereMesh" id="SphereMesh_mound"]
+material = SubResource("StandardMaterial3D_snow")
+radius = 1.6
+height = 0.7
+radial_segments = 24
+rings = 12
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jgcube"]
+size = Vector3(2.3361511, 2.0863037, 2.2061157)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_jgorb"]
+radius = 1.0710906
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jgorb"]
+size = Vector3(0.70840454, 0.67285156, 0.9841919)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_base_floor"]
+height = 0.3
+radius = 1.8
+
+[node name="RigidBody3D" type="RigidBody3D" unique_id=801145257]
+mass = 100.0
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1741641809]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14963245, 0.06175971, 0.018620491)
+shape = SubResource("SphereShape3D_outer")
+
+[node name="BaseCollision" type="CollisionShape3D" parent="." unique_id=1838070236]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14963245, -2.5269055, 0.018620491)
+shape = SubResource("CylinderShape3D_base")
+
+[node name="Glass" type="MeshInstance3D" parent="." unique_id=1160846073]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14963245, 0.06175971, 0.018620491)
+mesh = SubResource("SphereMesh_glass")
+
+[node name="WoodBase" type="MeshInstance3D" parent="." unique_id=1736708471]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14963245, -2.5705, 0.018620491)
+mesh = SubResource("CylinderMesh_base")
+
+[node name="Flake1" type="RigidBody3D" parent="." unique_id=1428767476]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0503676, 1.8617597, 0.6186205)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake1" unique_id=608945824]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake1" unique_id=1066303077]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake2" type="RigidBody3D" parent="." unique_id=104221579]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0496324, 2.1617596, -0.7813795)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake2" unique_id=779631993]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake2" unique_id=1627077302]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake3" type="RigidBody3D" parent="." unique_id=1541262423]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7496325, 0.7617597, 1.1186205)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake3" unique_id=2111688795]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake3" unique_id=1253849085]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake4" type="RigidBody3D" parent="." unique_id=363426159]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55036753, 0.5617597, -1.6813796)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake4" unique_id=676965682]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake4" unique_id=916016412]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake5" type="RigidBody3D" parent="." unique_id=658073818]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.34963244, -0.3382403, 1.9186205)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake5" unique_id=223507264]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake5" unique_id=1414878395]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake6" type="RigidBody3D" parent="." unique_id=725787555]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6503675, -0.5382403, -0.38137951)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake6" unique_id=288973695]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake6" unique_id=2092355533]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake7" type="RigidBody3D" parent="." unique_id=1301121203]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2496325, -1.1382403, -1.2813795)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake7" unique_id=1268097770]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake7" unique_id=44822603]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake8" type="RigidBody3D" parent="." unique_id=1940334727]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25036755, -1.5382403, 0.91862047)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake8" unique_id=1811937482]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake8" unique_id=762183011]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake9" type="RigidBody3D" parent="." unique_id=674469659]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7496325, 1.3617597, 1.6186205)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake9" unique_id=346842162]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake9" unique_id=1034278281]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake10" type="RigidBody3D" parent="." unique_id=600367814]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3503675, 1.1617597, -0.9813795)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake10" unique_id=100485555]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake10" unique_id=1643097537]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake11" type="RigidBody3D" parent="." unique_id=1132575651]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14963245, 2.5617597, 0.2186205)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake11" unique_id=194087618]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake11" unique_id=1998216630]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake12" type="RigidBody3D" parent="." unique_id=1195218701]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9496324, -0.1382403, 0.3186205)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake12" unique_id=760632440]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake12" unique_id=1644567846]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake13" type="RigidBody3D" parent="." unique_id=2042816769]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0503676, 1.8617597, 0.6186205)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake13" unique_id=1318565175]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake13" unique_id=1111028499]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake14" type="RigidBody3D" parent="." unique_id=359754571]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0496324, 2.1617596, -0.7813795)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake14" unique_id=1303505620]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake14" unique_id=118303782]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake15" type="RigidBody3D" parent="." unique_id=904628745]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7496325, 0.7617597, 1.1186205)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake15" unique_id=1114894526]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake15" unique_id=2022534214]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake16" type="RigidBody3D" parent="." unique_id=622375907]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55036753, 0.5617597, -1.6813796)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake16" unique_id=287005878]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake16" unique_id=1711351587]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake17" type="RigidBody3D" parent="." unique_id=700671693]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.34963244, -0.3382403, 1.9186205)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake17" unique_id=2108922038]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake17" unique_id=574072366]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake18" type="RigidBody3D" parent="." unique_id=362822232]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6503675, -0.5382403, -0.38137951)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake18" unique_id=1214972769]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake18" unique_id=609214495]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake19" type="RigidBody3D" parent="." unique_id=144050613]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2496325, -1.1382403, -1.2813795)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake19" unique_id=969465260]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake19" unique_id=58580058]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake20" type="RigidBody3D" parent="." unique_id=139601821]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25036755, -1.5382403, 0.91862047)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake20" unique_id=806005164]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake20" unique_id=592574639]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake21" type="RigidBody3D" parent="." unique_id=863642475]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7496325, 1.3617597, 1.6186205)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake21" unique_id=1014292798]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake21" unique_id=1577984762]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake22" type="RigidBody3D" parent="." unique_id=604985025]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3503675, 1.1617597, -0.9813795)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake22" unique_id=539465573]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake22" unique_id=1248611167]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake23" type="RigidBody3D" parent="." unique_id=1004284763]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14963245, 2.5617597, 0.2186205)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake23" unique_id=467476964]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake23" unique_id=995183457]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Flake24" type="RigidBody3D" parent="." unique_id=289635855]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9496324, -0.1382403, 0.3186205)
+collision_layer = 2
+collision_mask = 2
+mass = 0.01
+physics_material_override = SubResource("PhysicsMaterial_snow")
+continuous_cd = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flake24" unique_id=1225950119]
+shape = SubResource("SphereShape3D_flake")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Flake24" unique_id=667091181]
+mesh = SubResource("SphereMesh_flake")
+
+[node name="Diorama" type="Node3D" parent="." unique_id=2055052607]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14963245, 0.2107172, 0.018620491)
+
+[node name="SnowMound" type="MeshInstance3D" parent="Diorama" unique_id=1250450049]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.35, 0)
+mesh = SubResource("SphereMesh_mound")
+
+[node name="JGCube" type="RigidBody3D" parent="." unique_id=301728457]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12755549, 0, 0)
+collision_layer = 2
+collision_mask = 2
+continuous_cd = true
+
+[node name="JGCube" parent="JGCube" unique_id=1975565737 instance=ExtResource("4_jgcube")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2114505, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="JGCube" unique_id=510102174]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0873079, 0.027160645, -0.0043029785)
+shape = SubResource("BoxShape3D_jgcube")
+
+[node name="JGOrb" type="RigidBody3D" parent="." unique_id=1467258680]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.17508626, 0.08978653, -0.24932218)
+collision_layer = 2
+collision_mask = 2
+continuous_cd = true
+
+[node name="JGOrb" parent="JGOrb" unique_id=2097283733 instance=ExtResource("5_jgorb")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="JGOrb" unique_id=1547787110]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1599236, -0.03914821, 0.14889127)
+shape = SubResource("SphereShape3D_jgorb")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="JGOrb" unique_id=1995503886]
+transform = Transform3D(0.88140464, 0, -0.47236204, 0, 1, 0, 0.47236204, 0, 0.88140464, 1.0420732, 0.036621094, 0.81763566)
+shape = SubResource("BoxShape3D_jgorb")
+
+[node name="HollowShell" type="AnimatableBody3D" parent="." unique_id=495083550]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14963245, 0.06175971, 0.018620491)
+collision_layer = 2
+collision_mask = 2
+sync_to_physics = false
+script = ExtResource("3_shell")
+
+[node name="BaseFloorCollision" type="CollisionShape3D" parent="HollowShell" unique_id=2049147602]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.15, 0)
+shape = SubResource("CylinderShape3D_base_floor")
+
+[node name="Node3D" type="Node3D" parent="." unique_id=537422378]

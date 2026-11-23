@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://bc2g5h7o4bb6k"]
 
+[ext_resource type="PackedScene" uid="uid://d244xj6tgryu" path="res://gui/smenu/smenu.tscn" id="1_hgl33"]
 [ext_resource type="PackedScene" uid="uid://cl18cmhalcs4a" path="res://objects/default/ball.tscn" id="1_olsx1"]
 [ext_resource type="PackedScene" uid="uid://5ccq1c670sed" path="res://objects/default/basketball.tscn" id="2_w2l8p"]
 [ext_resource type="PackedScene" uid="uid://deny75gqppai" path="res://objects/default/basketcube.tscn" id="3_ggybe"]
@@ -26,6 +27,8 @@
 [ext_resource type="PackedScene" uid="uid://buop7fppn5oe4" path="res://player.tscn" id="24_h08w4"]
 [ext_resource type="PackedScene" uid="uid://bvr2faqu5gsud" path="res://objects/default/tower.tscn" id="24_w2l8p"]
 [ext_resource type="AudioStream" uid="uid://s0j3lrq1qobh" path="res://mapdependencies/map1.wav" id="25_iidna"]
+[ext_resource type="PackedScene" uid="uid://cfhw8xc8qlki" path="res://objects/default/jgs-logo-orb-100kg.tscn" id="27_v5xu6"]
+[ext_resource type="PackedScene" uid="uid://tkxlsm8ybobj" path="res://objects/default/snowglobe-100kg.tscn" id="28_snow"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4xowi"]
 
@@ -39,7 +42,7 @@ material = SubResource("StandardMaterial3D_vxd74")
 [sub_resource type="BoxShape3D" id="BoxShape3D_a0tk4"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_noarx"]
-size = Vector3(7.112549, 0.001, 7.3780518)
+size = Vector3(7.3709106, 0.001, 7.59848)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dhlwf"]
 albedo_color = Color(0, 0, 0, 1)
@@ -143,7 +146,11 @@ ambient_light_energy = 16.0
 reflected_light_source = 2
 tonemap_exposure = 0.23
 
-[node name="Node3D" type="Node3D" unique_id=1879759061]
+[node name="Map1 - Playground" type="Node3D" unique_id=1879759061]
+
+[node name="CanvasGroup" type="CanvasGroup" parent="." unique_id=64217221]
+
+[node name="Smenu" parent="CanvasGroup" unique_id=1070106664 instance=ExtResource("1_hgl33")]
 
 [node name="Floor And Structure" type="Node3D" parent="." unique_id=907915289]
 
@@ -163,11 +170,11 @@ shape = SubResource("BoxShape3D_a0tk4")
 transform = Transform3D(19.514845, 0, 0, 0, 1, 0, 0, 0, 19.437223, 20.730026, 0, 22.845753)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Floor And Structure/StaticBody3D" unique_id=2063386079]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.41882324, -0.4995, -1.0844116)
+transform = Transform3D(1.0000001, 0, 0, 0, 1, 0, 0, 0, 1, -0.39547783, -0.4995, -1.0690765)
 shape = SubResource("BoxShape3D_noarx")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Floor And Structure/StaticBody3D" unique_id=1823800846]
-transform = Transform3D(7.3182416, 0, 0, 0, 0.05, 0, 0, 0, 7.5726304, -0.42055067, -0.4995, -1.0879642)
+transform = Transform3D(7.3182425, 0, 0, 0, 0.05, 0, 0, 0, 7.5726304, -0.4205507, -0.4995, -1.0879642)
 material_override = SubResource("StandardMaterial3D_4xowi")
 mesh = SubResource("BoxMesh_a0tk4")
 
@@ -1282,6 +1289,14 @@ transform = Transform3D(-0.67729974, 0, 0.73570716, 0, 1, 0, -0.73570716, 0, -0.
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="CharacterBody3D" unique_id=1356443370]
 stream = ExtResource("25_iidna")
+volume_db = -20.075
 autoplay = true
 max_distance = 4096.0
 panning_strength = 0.0
+
+[node name="RigidBody3D" parent="." unique_id=1798526633 instance=ExtResource("27_v5xu6")]
+transform = Transform3D(0.14367767, 0, 0, 0, 0.14367767, 0, 0, 0, 0.14367767, -5.082555, 0.0929842, -1.5592852)
+mass = 100.0
+
+[node name="Snowglobe" parent="." unique_id=792114235 instance=ExtResource("28_snow")]
+transform = Transform3D(0.14367767, 0, 0, 0, 0.14367767, 0, 0, 0, 0.14367767, -3.8, -0.03, -1.5592852)

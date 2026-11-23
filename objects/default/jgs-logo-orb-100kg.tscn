@@ -1,0 +1,68 @@
+[gd_scene format=3 uid="uid://cfhw8xc8qlki"]
+
+[ext_resource type="PackedScene" uid="uid://c4gvkbeh6s5e5" path="res://objectdependencies/JGCube.glb" id="1_gxnex"]
+[ext_resource type="Material" uid="uid://cprs6aqcmdq4n" path="res://objectdependencies/glass.tres" id="2_blwg2"]
+[ext_resource type="PackedScene" uid="uid://cuo2q71h0bohb" path="res://objectdependencies/JGOrb.glb" id="3_sv74t"]
+[ext_resource type="Script" uid="uid://xspx8g2bdcae" path="res://objectdependencies/hollow_sphere_shell.gd" id="4_shell"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4b7if"]
+size = Vector3(2.3361511, 2.0863037, 2.2061157)
+
+[sub_resource type="SphereMesh" id="SphereMesh_r2tli"]
+material = ExtResource("2_blwg2")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_r2tli"]
+radius = 1.0710906
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_r2tli"]
+size = Vector3(0.70840454, 0.67285156, 0.9841919)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_outer"]
+radius = 3.2446697
+
+[node name="RigidBody3D" type="RigidBody3D" unique_id=1798526633]
+continuous_cd = true
+
+[node name="JGCube" type="RigidBody3D" parent="." unique_id=407305187]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12755549, 0, 0)
+collision_layer = 2
+collision_mask = 2
+continuous_cd = true
+
+[node name="JGCube" parent="JGCube" unique_id=1277655405 instance=ExtResource("1_gxnex")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2114505, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="JGCube" unique_id=475185604]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0873079, 0.027160645, -0.0043029785)
+shape = SubResource("BoxShape3D_4b7if")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=902579910]
+transform = Transform3D(6.48, 0, 0, 0, 6.48, 0, 0, 0, 6.48, 0.14963245, 0.06175971, 0.018620491)
+mesh = SubResource("SphereMesh_r2tli")
+
+[node name="JGOrb" type="RigidBody3D" parent="." unique_id=837060824]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.17508626, 0.08978653, -0.24932218)
+collision_layer = 2
+collision_mask = 2
+continuous_cd = true
+
+[node name="JGOrb" parent="JGOrb" unique_id=1175302089 instance=ExtResource("3_sv74t")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="JGOrb" unique_id=1986700102]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1599236, -0.03914821, 0.14889127)
+shape = SubResource("SphereShape3D_r2tli")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="JGOrb" unique_id=1019206400]
+transform = Transform3D(0.88140464, 0, -0.47236204, 0, 1, 0, 0.47236204, 0, 0.88140464, 1.0420732, 0.036621094, 0.81763566)
+shape = SubResource("BoxShape3D_r2tli")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=887508815]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14963245, 0.06175971, 0.018620491)
+shape = SubResource("SphereShape3D_outer")
+
+[node name="HollowShell" type="AnimatableBody3D" parent="." unique_id=1727997783]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14963245, 0.06175971, 0.018620491)
+collision_layer = 2
+collision_mask = 2
+sync_to_physics = false
+script = ExtResource("4_shell")
