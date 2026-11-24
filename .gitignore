@@ -13,3 +13,4 @@ mono_crash.*.json
 /android/
 core.3
 core.*
+override.cfg
