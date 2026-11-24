@@ -5,6 +5,7 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_42v7m"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_jo8ya"]
+material = ExtResource("1_narqn")
 
 [node name="RigidBody3D" type="RigidBody3D" unique_id=983496083]
 mass = 0.5
@@ -13,5 +14,4 @@ mass = 0.5
 shape = SubResource("BoxShape3D_42v7m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1578069609]
-material_override = ExtResource("1_narqn")
 mesh = SubResource("BoxMesh_jo8ya")
