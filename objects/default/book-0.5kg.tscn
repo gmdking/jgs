@@ -1,18 +1,15 @@
 [gd_scene format=3 uid="uid://btfg37vtc4ns4"]
 
-[ext_resource type="PackedScene" uid="uid://b0hyuusxwmd7i" path="res://objectdependencies/jgs-book.glb" id="1_0hgim"]
+[ext_resource type="PackedScene" uid="uid://b0hyuusxwmd7i" path="res://objectdependencies/models/jgs-book.glb" id="1_0hgim"]
+[ext_resource type="PhysicsMaterial" uid="uid://sokjvmha2jjh" path="res://objectdependencies/physics/standard-objects.tres" id="1_m20mb"]
 [ext_resource type="Texture2D" uid="uid://dpwfe53b0uu6a" path="res://gui/sources/logo.png" id="2_m20mb"]
-
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_d5bbx"]
-rough = true
-bounce = 0.1
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_r2tli"]
 size = Vector3(0.3270874, 0.49237645, 0.12942505)
 
 [node name="Book0_5Kg" type="RigidBody3D" unique_id=738524250]
 mass = 0.5
-physics_material_override = SubResource("PhysicsMaterial_d5bbx")
+physics_material_override = ExtResource("1_m20mb")
 
 [node name="jgs-book" parent="." unique_id=556023335 instance=ExtResource("1_0hgim")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13748796, 0, 0)

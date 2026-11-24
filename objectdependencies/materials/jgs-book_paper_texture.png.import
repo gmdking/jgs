@@ -2,9 +2,9 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cjpxdnjrnqyjv"
-path.s3tc="res://.godot/imported/jgs-book_paper_texture.png-5df82d5118b2522c6a96e28ef6fae3a0.s3tc.ctex"
-path.etc2="res://.godot/imported/jgs-book_paper_texture.png-5df82d5118b2522c6a96e28ef6fae3a0.etc2.ctex"
+uid="uid://c3wkjbmr1ecqw"
+path.s3tc="res://.godot/imported/jgs-book_paper_texture.png-cc5da39453991706c491683e5ab5e28b.s3tc.ctex"
+path.etc2="res://.godot/imported/jgs-book_paper_texture.png-cc5da39453991706c491683e5ab5e28b.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -15,8 +15,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://objectdependencies/jgs-book_paper_texture.png"
-dest_files=["res://.godot/imported/jgs-book_paper_texture.png-5df82d5118b2522c6a96e28ef6fae3a0.s3tc.ctex", "res://.godot/imported/jgs-book_paper_texture.png-5df82d5118b2522c6a96e28ef6fae3a0.etc2.ctex"]
+source_file="res://objectdependencies/materials/jgs-book_paper_texture.png"
+dest_files=["res://.godot/imported/jgs-book_paper_texture.png-cc5da39453991706c491683e5ab5e28b.s3tc.ctex", "res://.godot/imported/jgs-book_paper_texture.png-cc5da39453991706c491683e5ab5e28b.etc2.ctex"]
 
 [params]
 

@@ -1,10 +1,11 @@
 [gd_scene format=3 uid="uid://tkxlsm8ybobj"]
 
-[ext_resource type="Material" uid="uid://13kn5hb233jm" path="res://objectdependencies/wood.tres" id="1_wood"]
-[ext_resource type="Material" uid="uid://cprs6aqcmdq4n" path="res://objectdependencies/glass.tres" id="2_glass"]
-[ext_resource type="Script" uid="uid://xspx8g2bdcae" path="res://objectdependencies/hollow_sphere_shell.gd" id="3_shell"]
-[ext_resource type="PackedScene" uid="uid://c4gvkbeh6s5e5" path="res://objectdependencies/JGCube.glb" id="4_jgcube"]
-[ext_resource type="PackedScene" uid="uid://cuo2q71h0bohb" path="res://objectdependencies/JGOrb.glb" id="5_jgorb"]
+[ext_resource type="PhysicsMaterial" uid="uid://sokjvmha2jjh" path="res://objectdependencies/physics/standard-objects.tres" id="1_uxuj0"]
+[ext_resource type="Material" uid="uid://13kn5hb233jm" path="res://objectdependencies/materials/wood.tres" id="1_wood"]
+[ext_resource type="Material" uid="uid://cprs6aqcmdq4n" path="res://objectdependencies/materials/glass.tres" id="2_glass"]
+[ext_resource type="Script" uid="uid://xspx8g2bdcae" path="res://objectdependencies/scripts/hollow_sphere_shell.gd" id="3_shell"]
+[ext_resource type="PackedScene" uid="uid://c4gvkbeh6s5e5" path="res://objectdependencies/models/JGCube.glb" id="4_jgcube"]
+[ext_resource type="PackedScene" uid="uid://cuo2q71h0bohb" path="res://objectdependencies/models/JGOrb.glb" id="5_jgorb"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_outer"]
 radius = 3.2446697
@@ -67,6 +68,7 @@ radius = 1.8
 
 [node name="RigidBody3D" type="RigidBody3D" unique_id=801145257]
 transform = Transform3D(0.085, 0, 0, 0, 0.085, 0, 0, 0, 0.085, 0, 0, 0)
+physics_material_override = ExtResource("1_uxuj0")
 continuous_cd = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1741641809]

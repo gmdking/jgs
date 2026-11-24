@@ -1,8 +1,6 @@
 [gd_scene format=3 uid="uid://c1k1uwn7mpydp"]
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_42v7m"]
-friction = 0.0
-bounce = 1.0
+[ext_resource type="PhysicsMaterial" uid="uid://2mdl2jis4kod" path="res://objectdependencies/physics/bouncy.tres" id="1_4ssjl"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_k5dm7"]
 
@@ -13,7 +11,7 @@ albedo_color = Color(0.4266747, 0.5429403, 1, 1)
 [sub_resource type="SphereMesh" id="SphereMesh_nckfd"]
 
 [node name="RigidBody3D" type="RigidBody3D" unique_id=983496083]
-physics_material_override = SubResource("PhysicsMaterial_42v7m")
+physics_material_override = ExtResource("1_4ssjl")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=978701242]
 shape = SubResource("SphereShape3D_k5dm7")

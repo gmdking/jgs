@@ -1,9 +1,6 @@
 [gd_scene format=3 uid="uid://d0ihxelb03bck"]
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_yajei"]
-friction = 0.4
-rough = true
-bounce = 0.5
+[ext_resource type="PhysicsMaterial" uid="uid://bqh1x0j6o3n1o" path="res://objectdependencies/physics/moon.tres" id="1_3nlv7"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_yajei"]
 
@@ -16,7 +13,7 @@ material = SubResource("StandardMaterial3D_hsqxs")
 
 [node name="RigidBody3D" type="RigidBody3D" unique_id=983496083]
 mass = 5.0
-physics_material_override = SubResource("PhysicsMaterial_yajei")
+physics_material_override = ExtResource("1_3nlv7")
 gravity_scale = 0.3
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=978701242]

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://d181tiuifdqj7"]
 
-[ext_resource type="Material" uid="uid://cprs6aqcmdq4n" path="res://objectdependencies/glass.tres" id="1_narqn"]
+[ext_resource type="Material" uid="uid://cprs6aqcmdq4n" path="res://objectdependencies/materials/glass.tres" id="1_narqn"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_42v7m"]
 

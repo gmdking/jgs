@@ -1,8 +1,6 @@
 [gd_scene format=3 uid="uid://deny75gqppai"]
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_42v7m"]
-friction = 0.0
-bounce = 0.7
+[ext_resource type="PhysicsMaterial" uid="uid://b53cfrxto78gq" path="res://objectdependencies/physics/basket.tres" id="1_ixcik"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5b8ki"]
 
@@ -13,7 +11,7 @@ albedo_color = Color(1, 0.30588236, 0, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_5h844"]
 
 [node name="RigidBody3D" type="RigidBody3D" unique_id=983496083]
-physics_material_override = SubResource("PhysicsMaterial_42v7m")
+physics_material_override = ExtResource("1_ixcik")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=978701242]
 shape = SubResource("BoxShape3D_5b8ki")

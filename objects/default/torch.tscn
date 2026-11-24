@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://d3vp7vni2lgec"]
+
+[ext_resource type="Material" uid="uid://13kn5hb233jm" path="res://objectdependencies/materials/wood.tres" id="1_p771o"]
+[ext_resource type="Texture2D" uid="uid://uov176iji1lw" path="res://objectdependencies/materials/noise-flame.tres" id="2_q0o05"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_r2tli"]
+material = ExtResource("1_p771o")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_q0o05"]
+albedo_color = Color(1, 0.38431373, 0, 1)
+albedo_texture = ExtResource("2_q0o05")
+emission_enabled = true
+emission = Color(1, 0.37254903, 0, 1)
+emission_energy_multiplier = 2.05
+
+[sub_resource type="SphereMesh" id="SphereMesh_r2tli"]
+material = SubResource("StandardMaterial3D_q0o05")
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_r2tli"]
+radius = 0.24902344
+height = 2.0673828
+
+[node name="RigidBody3D" type="RigidBody3D" unique_id=541512432]
+mass = 0.2
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=739967298]
+transform = Transform3D(0.1, 0, 0, 0, 0.3, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("CylinderMesh_r2tli")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1536623937]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 0, 0.30898425, 0)
+layers = 16
+mesh = SubResource("SphereMesh_r2tli")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=1910002206]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4811619, 0)
+light_color = Color(1, 0.49019608, 0, 1)
+light_size = 1.0
+light_specular = 1.055
+omni_range = 4.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1524755609]
+transform = Transform3D(0.295, 0, 0, 0, 0.295, 0, 0, 0, 0.295, 0, -0.009938965, 0)
+shape = SubResource("CapsuleShape3D_r2tli")

@@ -2,9 +2,9 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://l6ch3v4ctrkn"
-path.s3tc="res://.godot/imported/jgs-book_Cube Base Color.png-6737dbedfbf5856774f3529d694937f9.s3tc.ctex"
-path.etc2="res://.godot/imported/jgs-book_Cube Base Color.png-6737dbedfbf5856774f3529d694937f9.etc2.ctex"
+uid="uid://c65mc87mny1wi"
+path.s3tc="res://.godot/imported/jgs-book_Cube Base Color.png-f7ca7f9d7dabafe241d176badad244a9.s3tc.ctex"
+path.etc2="res://.godot/imported/jgs-book_Cube Base Color.png-f7ca7f9d7dabafe241d176badad244a9.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -15,8 +15,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://objectdependencies/jgs-book_Cube Base Color.png"
-dest_files=["res://.godot/imported/jgs-book_Cube Base Color.png-6737dbedfbf5856774f3529d694937f9.s3tc.ctex", "res://.godot/imported/jgs-book_Cube Base Color.png-6737dbedfbf5856774f3529d694937f9.etc2.ctex"]
+source_file="res://objectdependencies/materials/jgs-book_Cube Base Color.png"
+dest_files=["res://.godot/imported/jgs-book_Cube Base Color.png-f7ca7f9d7dabafe241d176badad244a9.s3tc.ctex", "res://.godot/imported/jgs-book_Cube Base Color.png-f7ca7f9d7dabafe241d176badad244a9.etc2.ctex"]
 
 [params]
 

@@ -1,9 +1,10 @@
 [gd_scene format=3 uid="uid://cfhw8xc8qlki"]
 
-[ext_resource type="PackedScene" uid="uid://c4gvkbeh6s5e5" path="res://objectdependencies/JGCube.glb" id="1_gxnex"]
-[ext_resource type="Material" uid="uid://cprs6aqcmdq4n" path="res://objectdependencies/glass.tres" id="2_blwg2"]
-[ext_resource type="PackedScene" uid="uid://cuo2q71h0bohb" path="res://objectdependencies/JGOrb.glb" id="3_sv74t"]
-[ext_resource type="Script" uid="uid://xspx8g2bdcae" path="res://objectdependencies/hollow_sphere_shell.gd" id="4_shell"]
+[ext_resource type="PhysicsMaterial" uid="uid://sokjvmha2jjh" path="res://objectdependencies/physics/standard-objects.tres" id="1_7p4aa"]
+[ext_resource type="PackedScene" uid="uid://c4gvkbeh6s5e5" path="res://objectdependencies/models/JGCube.glb" id="1_gxnex"]
+[ext_resource type="Material" uid="uid://cprs6aqcmdq4n" path="res://objectdependencies/materials/glass.tres" id="2_blwg2"]
+[ext_resource type="PackedScene" uid="uid://cuo2q71h0bohb" path="res://objectdependencies/models/JGOrb.glb" id="3_sv74t"]
+[ext_resource type="Script" uid="uid://xspx8g2bdcae" path="res://objectdependencies/scripts/hollow_sphere_shell.gd" id="4_shell"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4b7if"]
 size = Vector3(2.3361511, 2.0863037, 2.2061157)
@@ -21,6 +22,7 @@ size = Vector3(0.70840454, 0.67285156, 0.9841919)
 radius = 3.2446697
 
 [node name="RigidBody3D" type="RigidBody3D" unique_id=1798526633]
+physics_material_override = ExtResource("1_7p4aa")
 continuous_cd = true
 
 [node name="JGCube" type="RigidBody3D" parent="." unique_id=407305187]
