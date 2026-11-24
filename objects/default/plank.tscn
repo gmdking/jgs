@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://bc65ptq6k8rfx"]
+
+[ext_resource type="Material" uid="uid://13kn5hb233jm" path="res://objectdependencies/wood.tres" id="1_7qeb5"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8k8hi"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_6xqny"]
+material = ExtResource("1_7qeb5")
+size = Vector3(1, 0.5, 4)
+
+[node name="RigidBody3D" type="RigidBody3D" unique_id=983496083]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=978701242]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0, 0, 0, 4, 0, 0, 0)
+shape = SubResource("BoxShape3D_8k8hi")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1578069609]
+mesh = SubResource("BoxMesh_6xqny")

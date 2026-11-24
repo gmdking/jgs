@@ -202,6 +202,11 @@ debug_shape_thickness = 5
 [node name="Marker3D" type="Marker3D" parent="CameraPivot/Camera3D" unique_id=25498469]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.079, 0.3, -3.0223656)
 
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="CameraPivot/Camera3D/Marker3D" unique_id=1271323298]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, -0.32519317, 2.8283541)
+light_bake_mode = 0
+sky_mode = 1
+
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1966873946]
 transform = Transform3D(0.98916286, 0, 0, 0, 0.98887503, 0, 0, 0, 0.9892592, 0, 0, 0)
 layers = 2

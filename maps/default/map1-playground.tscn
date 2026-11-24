@@ -27,8 +27,8 @@
 [ext_resource type="PackedScene" uid="uid://buop7fppn5oe4" path="res://player.tscn" id="24_h08w4"]
 [ext_resource type="PackedScene" uid="uid://bvr2faqu5gsud" path="res://objects/default/tower.tscn" id="24_w2l8p"]
 [ext_resource type="AudioStream" uid="uid://s0j3lrq1qobh" path="res://mapdependencies/map1.wav" id="25_iidna"]
-[ext_resource type="PackedScene" uid="uid://cfhw8xc8qlki" path="res://objects/default/jgs-logo-orb-100kg.tscn" id="27_v5xu6"]
-[ext_resource type="PackedScene" uid="uid://tkxlsm8ybobj" path="res://objects/default/snowglobe-100kg.tscn" id="28_snow"]
+[ext_resource type="PackedScene" uid="uid://cfhw8xc8qlki" path="res://objects/default/jgs-logo-orb-1kg.tscn" id="27_v5xu6"]
+[ext_resource type="PackedScene" uid="uid://tkxlsm8ybobj" path="res://objects/default/snowglobe-1kg.tscn" id="28_snow"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4xowi"]
 
@@ -1289,11 +1289,11 @@ transform = Transform3D(-0.67729974, 0, 0.73570716, 0, 1, 0, -0.73570716, 0, -0.
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="CharacterBody3D" unique_id=1356443370]
 stream = ExtResource("25_iidna")
-bus = &"Music"
 volume_db = -20.075
 autoplay = true
 max_distance = 4096.0
 panning_strength = 0.0
+bus = &"Music"
 playback_type = 1
 
 [node name="RigidBody3D" parent="." unique_id=1798526633 instance=ExtResource("27_v5xu6")]

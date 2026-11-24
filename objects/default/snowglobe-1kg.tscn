@@ -66,7 +66,7 @@ height = 0.3
 radius = 1.8
 
 [node name="RigidBody3D" type="RigidBody3D" unique_id=801145257]
-mass = 100.0
+transform = Transform3D(0.085, 0, 0, 0, 0.085, 0, 0, 0, 0.085, 0, 0, 0)
 continuous_cd = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1741641809]
@@ -240,7 +240,7 @@ shape = SubResource("SphereShape3D_flake")
 mesh = SubResource("SphereMesh_flake")
 
 [node name="Flake12" type="RigidBody3D" parent="." unique_id=1195218701]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9496324, -0.1382403, 0.3186205)
+transform = Transform3D(0.77553076, 0, 0.6313098, 0, 1, 0, -0.6313098, 0, 0.77553076, 1.6938653, 0.23233634, -0.7391747)
 collision_layer = 2
 collision_mask = 2
 mass = 0.01
@@ -254,7 +254,7 @@ shape = SubResource("SphereShape3D_flake")
 mesh = SubResource("SphereMesh_flake")
 
 [node name="Flake13" type="RigidBody3D" parent="." unique_id=2042816769]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0503676, 1.8617597, 0.6186205)
+transform = Transform3D(0.77553076, 0, 0.6313098, 0, 1, 0, -0.6313098, 0, 0.77553076, -0.44333398, 2.2323363, 1.387414)
 collision_layer = 2
 collision_mask = 2
 mass = 0.01
@@ -268,7 +268,7 @@ shape = SubResource("SphereShape3D_flake")
 mesh = SubResource("SphereMesh_flake")
 
 [node name="Flake14" type="RigidBody3D" parent="." unique_id=359754571]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0496324, 2.1617596, -0.7813795)
+transform = Transform3D(0.77553076, 0, 0.6313098, 0, 1, 0, -0.6313098, 0, 0.77553076, 0.30144686, 2.5323362, -1.0240797)
 collision_layer = 2
 collision_mask = 2
 mass = 0.01
@@ -282,7 +282,7 @@ shape = SubResource("SphereShape3D_flake")
 mesh = SubResource("SphereMesh_flake")
 
 [node name="Flake15" type="RigidBody3D" parent="." unique_id=904628745]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7496325, 0.7617597, 1.1186205)
+transform = Transform3D(0.77553076, 0, 0.6313098, 0, 1, 0, -0.6313098, 0, 0.77553076, 2.043807, 1.1323364, 0.0075118244)
 collision_layer = 2
 collision_mask = 2
 mass = 0.01
@@ -296,7 +296,7 @@ shape = SubResource("SphereShape3D_flake")
 mesh = SubResource("SphereMesh_flake")
 
 [node name="Flake16" type="RigidBody3D" parent="." unique_id=622375907]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55036753, 0.5617597, -1.6813796)
+transform = Transform3D(0.77553076, 0, 0.6313098, 0, 1, 0, -0.6313098, 0, 0.77553076, -1.5075812, 0.93233633, -0.71196187)
 collision_layer = 2
 collision_mask = 2
 mass = 0.01
@@ -310,7 +310,7 @@ shape = SubResource("SphereShape3D_flake")
 mesh = SubResource("SphereMesh_flake")
 
 [node name="Flake17" type="RigidBody3D" parent="." unique_id=700671693]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.34963244, -0.3382403, 1.9186205)
+transform = Transform3D(0.77553076, 0, 0.6313098, 0, 1, 0, -0.6313098, 0, 0.77553076, 1.4631119, 0.032336295, 1.5117701)
 collision_layer = 2
 collision_mask = 2
 mass = 0.01
@@ -324,7 +324,7 @@ shape = SubResource("SphereShape3D_flake")
 mesh = SubResource("SphereMesh_flake")
 
 [node name="Flake18" type="RigidBody3D" parent="." unique_id=362822232]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6503675, -0.5382403, -0.38137951)
+transform = Transform3D(0.77553076, 0, 0.6313098, 0, 1, 0, -0.6313098, 0, 0.77553076, -1.539962, -0.16766363, 0.990669)
 collision_layer = 2
 collision_mask = 2
 mass = 0.01
@@ -338,7 +338,7 @@ shape = SubResource("SphereShape3D_flake")
 mesh = SubResource("SphereMesh_flake")
 
 [node name="Flake19" type="RigidBody3D" parent="." unique_id=144050613]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2496325, -1.1382403, -1.2813795)
+transform = Transform3D(0.77553076, 0, 0.6313098, 0, 1, 0, -0.6313098, 0, 0.77553076, 0.14089817, -0.7676637, -1.5381072)
 collision_layer = 2
 collision_mask = 2
 mass = 0.01
@@ -352,7 +352,7 @@ shape = SubResource("SphereShape3D_flake")
 mesh = SubResource("SphereMesh_flake")
 
 [node name="Flake20" type="RigidBody3D" parent="." unique_id=139601821]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25036755, -1.5382403, 0.91862047)
+transform = Transform3D(0.77553076, 0, 0.6313098, 0, 1, 0, -0.6313098, 0, 0.77553076, 0.3664835, -1.1676636, 1.1150253)
 collision_layer = 2
 collision_mask = 2
 mass = 0.01
@@ -366,7 +366,7 @@ shape = SubResource("SphereShape3D_flake")
 mesh = SubResource("SphereMesh_flake")
 
 [node name="Flake21" type="RigidBody3D" parent="." unique_id=863642475]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7496325, 1.3617597, 1.6186205)
+transform = Transform3D(0.77553076, 0, 0.6313098, 0, 1, 0, -0.6313098, 0, 0.77553076, 1.5839312, 1.7323363, 1.026587)
 collision_layer = 2
 collision_mask = 2
 mass = 0.01
@@ -380,7 +380,7 @@ shape = SubResource("SphereShape3D_flake")
 mesh = SubResource("SphereMesh_flake")
 
 [node name="Flake22" type="RigidBody3D" parent="." unique_id=604985025]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3503675, 1.1617597, -0.9813795)
+transform = Transform3D(0.77553076, 0, 0.6313098, 0, 1, 0, -0.6313098, 0, 0.77553076, -1.6860888, 1.5323364, 0.33595762)
 collision_layer = 2
 collision_mask = 2
 mass = 0.01
@@ -394,7 +394,7 @@ shape = SubResource("SphereShape3D_flake")
 mesh = SubResource("SphereMesh_flake")
 
 [node name="Flake23" type="RigidBody3D" parent="." unique_id=1004284763]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14963245, 2.5617597, 0.2186205)
+transform = Transform3D(0.77553076, 0, 0.6313098, 0, 1, 0, -0.6313098, 0, 0.77553076, 0.23477902, 2.9323363, 0.31962985)
 collision_layer = 2
 collision_mask = 2
 mass = 0.01
@@ -408,7 +408,7 @@ shape = SubResource("SphereShape3D_flake")
 mesh = SubResource("SphereMesh_flake")
 
 [node name="Flake24" type="RigidBody3D" parent="." unique_id=289635855]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9496324, -0.1382403, 0.3186205)
+transform = Transform3D(0.77553076, 0, 0.6313098, 0, 1, 0, -0.6313098, 0, 0.77553076, 1.6938653, 0.23233634, -0.7391747)
 collision_layer = 2
 collision_mask = 2
 mass = 0.01
@@ -469,3 +469,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.15, 0)
 shape = SubResource("CylinderShape3D_base_floor")
 
 [node name="Node3D" type="Node3D" parent="." unique_id=537422378]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=372330314]
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1287953488]

@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://ba8dg6fq0wcqd"]
+
+[ext_resource type="Texture2D" uid="uid://cjpxdnjrnqyjv" path="res://objectdependencies/jgs-book_paper_texture.png" id="1_r8eho"]
+
+[resource]
+resource_name = "paper"
+cull_mode = 2
+albedo_texture = ExtResource("1_r8eho")
+roughness = 0.5
+metadata/_gltf_primary_texture_coord = 0
