@@ -739,12 +739,22 @@ func _signature(node: RigidBody3D) -> Array:
 	]
 
 
+## Only the outermost RigidBody3D of an object is networked. Decorative /
+## internal physics (snowglobe flakes, the orb's inner bodies, ...) is left to
+## run locally on each peer. Add a body to the `net_ignore` group to opt a
+## whole top-level body out as well.
 func _collect(node: Node, out: Dictionary) -> void:
 	for child in node.get_children():
+		if not is_instance_valid(child):
+			continue
 		if child is RigidBody3D:
+			if child.is_in_group("net_ignore"):
+				continue
 			var key := _key_for(child)
 			if key != "":
 				out[key] = child
+			# Don't descend into it: children with their own physics are local.
+			continue
 		_collect(child, out)
 
 
