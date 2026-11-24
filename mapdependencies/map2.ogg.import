@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/map2.ogg-18a3255947712c185952222cd5097cf6.ogg
 
 [params]
 
-loop=false
+loop=true
 loop_offset=0
 bpm=0
 beat_count=0
