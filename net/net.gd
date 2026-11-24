@@ -1,15 +1,14 @@
 extends Node
 ## Minimal TCP/IP multiplayer for JGS.
 ##
-## The host owns the map and broadcasts rigid-body transforms. Each peer owns
-## its own player (and whatever object it is currently holding). Interactions
-## (pickup/drop/duplicate/delete/scale) fall out of held-object state and a
-## slow scan for added/removed/resized RigidBody3Ds.
+## The host is authoritative: it owns the map, runs physics, computes every
+## interaction (pickup, throw, duplicate, delete, scale) and broadcasts the
+## resulting object state. Clients only send intents and follow snapshots.
 ##
 ## Wire format: 4-byte big-endian payload length + UTF-8 JSON object.
 
 const PLAYER_HZ := 30.0
-const OBJECT_HZ := 15.0
+const OBJECT_HZ := 30.0
 const DIFF_HZ := 5.0
 const MAX_PACKET := 16 * 1024 * 1024
 
@@ -32,7 +31,8 @@ var _world: Node = null
 var _object_root: Node3D = null
 var _objects := {}         # key -> RigidBody3D
 var _signatures := {}      # key -> Array
-var _held_objects := {}    # key -> [owner_id, Transform3D]
+var _held_by := {}         # peer_id -> object key
+var _holder_of := {}       # object key -> peer_id
 var _remote_players := {}  # id -> Node3D
 var _remote_states := {}   # id -> player message
 
@@ -106,7 +106,8 @@ func _forget_world() -> void:
 	_object_root = null
 	_objects.clear()
 	_signatures.clear()
-	_held_objects.clear()
+	_held_by.clear()
+	_holder_of.clear()
 	_remote_states.clear()
 	for node in _remote_players.values():
 		if is_instance_valid(node) and node is Node:
@@ -122,6 +123,13 @@ func set_map_path(path: String) -> void:
 	map_path = path
 	if role == Role.HOST:
 		_broadcast({"t": "map", "path": path})
+
+
+## Held objects are moved on the physics step so they stay in sync with Jolt
+## instead of jittering between render frames.
+func _physics_process(_delta: float) -> void:
+	if role == Role.HOST:
+		_move_held_objects()
 
 
 func _process(delta: float) -> void:
@@ -153,10 +161,10 @@ func _process(delta: float) -> void:
 			_object_accum = 0.0
 			_send_object_states()
 
-	_diff_accum += delta
-	if _diff_accum >= 1.0 / DIFF_HZ:
-		_diff_accum = 0.0
-		_scan_objects(false)
+		_diff_accum += delta
+		if _diff_accum >= 1.0 / DIFF_HZ:
+			_diff_accum = 0.0
+			_scan_objects(false)
 
 
 func _on_world_changed(scene: Node) -> void:
@@ -320,15 +328,8 @@ func _handle_message(id: int, msg: Dictionary) -> void:
 				_remote_states[id] = msg
 				_apply_player_state(id, msg)
 				_broadcast(msg, id)
-			"spawn":
-				_apply_spawn(msg)
-				_broadcast(msg, id)
-			"despawn":
-				_apply_despawn(msg)
-				_broadcast(msg, id)
-			"scale":
-				_apply_scale(msg)
-				_broadcast(msg, id)
+			"req":
+				_handle_request(id, msg)
 			"bye":
 				_remove_peer(id, false)
 	else:
@@ -359,6 +360,12 @@ func _handle_message(id: int, msg: Dictionary) -> void:
 				_apply_despawn(msg)
 			"scale":
 				_apply_scale(msg)
+			"grab":
+				# Someone else got the object we are drawing locally.
+				if int(msg.get("by", -1)) != peer_id:
+					_clear_local_hold(String(msg.get("key", "")))
+			"deny":
+				_clear_local_hold(String(msg.get("key", "")))
 			"leave":
 				_remove_player_visual(int(msg.get("id", -1)))
 			"bye":
@@ -377,9 +384,7 @@ func _remove_peer(id: int, notify: bool = true) -> void:
 	_peers.erase(id)
 	_known_peers.erase(id)
 	_remote_states.erase(id)
-	for key in _held_objects.keys():
-		if int(_held_objects[key][0]) == id:
-			_held_objects.erase(key)
+	_server_release(id, false)
 	_remove_player_visual(id)
 	if notify:
 		_broadcast({"t": "leave", "id": id})
@@ -390,6 +395,233 @@ func _remove_player_visual(id: int) -> void:
 	if is_instance_valid(node) and node is Node:
 		(node as Node).queue_free()
 	_remote_players.erase(id)
+
+
+# ------------------------------------------------------- interactions (host) ---
+
+## Entry points for the host's own player controller. The host is the server,
+## so its actions go through the same authoritative code as client intents.
+func server_pickup(_player: Node, target: Node) -> void:
+	if role == Role.HOST and target != null:
+		_server_pickup(1, _key_for(target))
+
+
+func server_drop(_player: Node) -> void:
+	if role == Role.HOST:
+		_server_release(1, true)
+
+
+func server_duplicate(_player: Node, target: Node) -> void:
+	if role == Role.HOST and target != null:
+		_server_duplicate(1, _key_for(target))
+
+
+func server_delete(_player: Node, target: Node) -> void:
+	if role == Role.HOST and target != null:
+		_server_delete(_key_for(target))
+
+
+func server_scale(_player: Node, target: Node, factor: float) -> void:
+	if role == Role.HOST and target != null:
+		_server_scale(1, _key_for(target), factor)
+
+
+## Clients only ask; the host decides what actually happens.
+func request_pickup(target: Node) -> void:
+	if role == Role.CLIENT and target != null:
+		var key := _key_for(target)
+		if key != "":
+			_send_to(1, {"t": "req", "kind": "pickup", "key": key})
+
+
+func request_drop() -> void:
+	if role == Role.CLIENT:
+		_send_to(1, {"t": "req", "kind": "drop"})
+
+
+func request_duplicate(target: Node) -> void:
+	if role == Role.CLIENT and target != null:
+		var key := _key_for(target)
+		if key != "":
+			_send_to(1, {"t": "req", "kind": "duplicate", "key": key})
+
+
+func request_delete(target: Node) -> void:
+	if role == Role.CLIENT and target != null:
+		var key := _key_for(target)
+		if key != "":
+			_send_to(1, {"t": "req", "kind": "delete", "key": key})
+
+
+func request_scale(target: Node, factor: float) -> void:
+	if role == Role.CLIENT and target != null:
+		var key := _key_for(target)
+		if key != "":
+			_send_to(1, {"t": "req", "kind": "scale", "key": key, "factor": factor})
+
+
+func key_for(node: Node) -> String:
+	return _key_for(node)
+
+
+func _handle_request(peer: int, msg: Dictionary) -> void:
+	var kind := String(msg.get("kind", ""))
+	var key := String(msg.get("key", ""))
+	match kind:
+		"pickup":
+			_server_pickup(peer, key)
+		"drop":
+			_server_release(peer, true)
+		"duplicate":
+			_server_duplicate(peer, key)
+		"delete":
+			_server_delete(key)
+		"scale":
+			_server_scale(peer, key, float(msg.get("factor", 1.1)))
+
+
+func _server_pickup(peer: int, key: String) -> void:
+	var object = _objects.get(key)
+	if key == "" or _holder_of.has(key) or not (is_instance_valid(object) and object is RigidBody3D):
+		# Tell the requester so it can drop its locally predicted visual.
+		if peer != 1:
+			_send_to(peer, {"t": "deny", "kind": "pickup", "key": key})
+		return
+	if _held_by.has(peer):
+		_server_release(peer, false)
+	_held_by[peer] = key
+	_holder_of[key] = peer
+	object.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
+	object.freeze = true
+	object.linear_velocity = Vector3.ZERO
+	object.angular_velocity = Vector3.ZERO
+	_move_held_objects()
+	_broadcast({"t": "grab", "key": key, "by": peer})
+
+
+func _server_release(peer: int, throw: bool) -> void:
+	var key: String = _held_by.get(peer, "")
+	if key == "":
+		return
+	_held_by.erase(peer)
+	_holder_of.erase(key)
+	var object = _objects.get(key)
+	if is_instance_valid(object) and object is RigidBody3D:
+		object.freeze = false
+		object.freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
+		var velocity := Vector3.ZERO
+		if throw:
+			var pose := _pose_for(peer)
+			var pitch := float(pose.get("pitch", 0.0))
+			if pitch > 0.07:
+				velocity = (pose["forward"] as Vector3) * pitch * 12.0
+		object.linear_velocity = velocity
+		_broadcast({"t": "throw", "key": key, "lv": _pack_v(velocity), "by": peer})
+
+
+func _server_duplicate(peer: int, key: String) -> void:
+	if _object_root == null or key == "":
+		return
+	var object = _objects.get(key)
+	if not (is_instance_valid(object) and object is RigidBody3D):
+		return
+	var copy := (object as RigidBody3D).duplicate() as RigidBody3D
+	if copy == null:
+		return
+	_object_root.add_child(copy)
+	copy.global_transform = object.global_transform
+	copy.global_transform.origin += (_pose_for(peer)["forward"] as Vector3) * 1.5
+	copy.freeze = false
+	copy.linear_velocity = Vector3.ZERO
+	copy.angular_velocity = Vector3.ZERO
+	_scan_objects(false)
+
+
+func _server_delete(key: String) -> void:
+	var object = _objects.get(key)
+	if not is_instance_valid(object):
+		return
+	if _holder_of.has(key):
+		_held_by.erase(_holder_of[key])
+		_holder_of.erase(key)
+	_objects.erase(key)
+	_signatures.erase(key)
+	(object as Node).queue_free()
+	_broadcast({"t": "despawn", "key": key})
+
+
+func _server_scale(peer: int, key: String, factor: float) -> void:
+	var object = _objects.get(key)
+	if not (is_instance_valid(object) and object is RigidBody3D):
+		return
+	object.scale *= factor
+	object.mass *= factor
+	_signatures[key] = _signature(object)
+	_send_scale(key, object)
+
+
+func _move_held_objects() -> void:
+	if _world == null:
+		return
+	for id in _held_by.keys():
+		var key: String = _held_by[id]
+		var object = _objects.get(key)
+		if not (is_instance_valid(object) and object is RigidBody3D):
+			continue
+		var pose := _pose_for(int(id))
+		var hold := float(pose.get("hold", 3.0))
+		object.global_transform.origin = (pose["origin"] as Vector3) + (pose["forward"] as Vector3) * hold
+		object.linear_velocity = Vector3.ZERO
+		object.angular_velocity = Vector3.ZERO
+
+
+## Camera pose used to place held objects and compute throw velocity. Remote
+## peers only send yaw + pitch, so their camera origin is reconstructed from
+## the local player's authored camera offset (pitch removed).
+func _pose_for(id: int) -> Dictionary:
+	if id == 1:
+		var player := _local_player()
+		if player != null:
+			var cam := player.get_node_or_null("CameraPivot/Camera3D") as Camera3D
+			if cam != null:
+				var p = player.get("pitch")
+				var h = player.get("hold_distance")
+				return {
+					"forward": -cam.global_transform.basis.z.normalized(),
+					"origin": cam.global_transform.origin,
+					"pitch": float(p) if p != null else 0.0,
+					"hold": float(h) if h != null else 3.0
+				}
+	var state: Dictionary = _remote_states.get(id, {})
+	var x := _unpack_xform(state.get("x", []))
+	var pitch := float(state.get("pitch", 0.0))
+	var look_basis := x.basis * Basis(Vector3.RIGHT, pitch)
+	return {
+		"forward": -look_basis.z.normalized(),
+		"origin": x.origin + x.basis * _camera_offset(),
+		"pitch": pitch,
+		"hold": 3.0
+	}
+
+
+func _camera_offset() -> Vector3:
+	var player := _local_player()
+	if player != null:
+		var pivot := player.get_node_or_null("CameraPivot") as Node3D
+		var cam := player.get_node_or_null("CameraPivot/Camera3D") as Node3D
+		if pivot != null and cam != null:
+			var b := pivot.transform.basis
+			var sx := b.x.length()
+			var sy := b.y.length()
+			var sz := b.z.length()
+			var rot := Basis(b.x.normalized(), b.y.normalized(), b.z.normalized())
+			var local_cam := Vector3(
+				cam.transform.origin.x * sx,
+				cam.transform.origin.y * sy,
+				cam.transform.origin.z * sz
+			)
+			return pivot.transform.origin + rot * local_cam
+	return Vector3(0, 0.7, 0)
 
 
 # ----------------------------------------------------------------- players ---
@@ -442,16 +674,8 @@ func _send_player_state() -> void:
 		"id": peer_id,
 		"x": _pack_xform(player.global_transform),
 		"v": _pack_v(player.velocity),
-		"pitch": float(pitch_value) if pitch_value != null else 0.0,
-		"held": ""
+		"pitch": float(pitch_value) if pitch_value != null else 0.0
 	}
-	var held = player.get("held_object")
-	if held is RigidBody3D:
-		var key := _key_for(held)
-		if key != "":
-			msg["held"] = key
-			msg["hx"] = _pack_xform(held.global_transform)
-			_held_objects[key] = [peer_id, held.global_transform]
 	if role == Role.HOST:
 		_remote_states[peer_id] = msg
 		_broadcast(msg)
@@ -464,31 +688,12 @@ func _apply_player_state(id: int, msg: Dictionary) -> void:
 	if visual != null:
 		visual.global_transform = _unpack_xform(msg.get("x", []))
 
-	var held := String(msg.get("held", ""))
-	if held != "":
-		var held_transform := _unpack_xform(msg.get("hx", []))
-		_held_objects[held] = [id, held_transform]
-		var object = _objects.get(held)
-		if object is RigidBody3D:
-			object.global_transform = held_transform
-			object.freeze = true
-			object.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
-	else:
-		for key in _held_objects.keys():
-			if int(_held_objects[key][0]) == id:
-				_held_objects.erase(key)
-				var object = _objects.get(key)
-				if is_instance_valid(object) and object is RigidBody3D:
-					object.freeze = false
-
 
 # ----------------------------------------------------------------- objects ---
 
 func _send_object_states() -> void:
 	var states: Array = []
 	for key in _objects.keys():
-		if _held_objects.has(key):
-			continue
 		var node = _objects.get(key)
 		if is_instance_valid(node) and node is RigidBody3D:
 			states.append([key, _pack_xform(node.global_transform)])
@@ -496,10 +701,19 @@ func _send_object_states() -> void:
 
 
 func _apply_states(msg: Dictionary) -> void:
+	# The owning client draws its held object locally; don't fight that with
+	# host snapshots until it lets go.
+	var local := _local_player()
+	var local_held: Node = null
+	if local != null:
+		local_held = local.get("held_object")
+	var local_held_key := _key_for(local_held) if local_held != null else ""
 	for entry in msg.get("states", []):
 		if not (entry is Array) or entry.size() < 2:
 			continue
 		var key := String(entry[0])
+		if role == Role.CLIENT and key == local_held_key:
+			continue
 		var node = _objects.get(key)
 		if is_instance_valid(node) and node is RigidBody3D:
 			node.global_transform = _unpack_xform(entry[1])
@@ -585,7 +799,9 @@ func _normalize_object(node: Node) -> String:
 func _despawn_key(key: String) -> void:
 	_objects.erase(key)
 	_signatures.erase(key)
-	_held_objects.erase(key)
+	if _holder_of.has(key):
+		_held_by.erase(_holder_of[key])
+		_holder_of.erase(key)
 	_route({"t": "despawn", "key": key})
 
 
@@ -646,9 +862,25 @@ func _apply_despawn(msg: Dictionary) -> void:
 	var node = _objects.get(key)
 	_objects.erase(key)
 	_signatures.erase(key)
-	_held_objects.erase(key)
+	_clear_local_hold(key)
 	if is_instance_valid(node) and node is Node:
 		(node as Node).queue_free()
+
+
+## Stop drawing a locally predicted held object and hand it back to host
+## snapshots (used when the host denies our grab, someone else wins it, or it
+## is deleted).
+func _clear_local_hold(key: String) -> void:
+	var local := _local_player()
+	if local == null:
+		return
+	var held: Node = local.get("held_object")
+	if not is_instance_valid(held) or (key != "" and _key_for(held) != key):
+		return
+	if held is RigidBody3D:
+		(held as RigidBody3D).freeze = false
+		(held as RigidBody3D).freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
+	local.set("held_object", null)
 
 
 func _apply_scale(msg: Dictionary) -> void:
