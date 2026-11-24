@@ -210,6 +210,18 @@ text = "Quit"
 autowrap_mode = 3
 autowrap_trim_flags = 0
 
+[node name="Multiplayer" type="Button" parent="Buttons/Main" unique_id=1823467291]
+offset_left = 609.0
+offset_top = 130.0
+offset_right = 929.0
+offset_bottom = 385.0
+tooltip_text = "Host a game or join one over TCP/IP."
+theme = SubResource("Theme_ouk20")
+button_group = SubResource("ButtonGroup_heart")
+text = "Multiplayer"
+autowrap_mode = 3
+autowrap_trim_flags = 0
+
 [node name="Settings" type="Node2D" parent="Buttons" unique_id=595602597]
 
 [node name="Back" type="Button" parent="Buttons/Settings" unique_id=1413082344]

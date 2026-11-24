@@ -57,12 +57,12 @@ func _on_item_activated(index: int):
 		load_directory(current_path + folder_name + "/")
 
 	elif text.begins_with("📄 "):
-		var file_name := text.substr(2) + ".tscn"
-		var full_path := current_path + file_name
-		var clean_name := name.replace(".remap", "")
-		file_list.add_item("📄 " + clean_name.get_basename())
+		var full_path := String(file_list.get_item_metadata(index))
+		if full_path.is_empty():
+			full_path = current_path + text.substr(2) + ".tscn"
 
 		print("Loading: ", full_path)
+		Net.set_map_path(full_path)
 		get_tree().change_scene_to_file(full_path)
 
 

@@ -26,6 +26,7 @@ SettingsUI="*res://gui/scripts/settings_menu.gd"
 Crosshair="*res://gui/scripts/crosshair.gd"
 DebugMenu="*res://autoload/debug_menu.gd"
 Discord="*uid://dm7naatl1whbq"
+Net="*res://net/net.gd"
 
 [display]
 

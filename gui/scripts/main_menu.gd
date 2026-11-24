@@ -14,6 +14,7 @@ const QUIT_POS := Vector2(0, 5000)
 @onready var play_button: Button = $Buttons/Main/Play
 @onready var settings_button: Button = get_node("Buttons/Main/Options and help")
 @onready var quit_button: Button = $Buttons/Main/Quit
+@onready var multiplayer_button: Button = $Buttons/Main/Multiplayer
 @onready var back_button: Button = $Buttons/Settings/Back
 @onready var no_button: Button = $Buttons/Quit/No
 @onready var yes_button: Button = $Buttons/Quit/Yes
@@ -35,7 +36,7 @@ var hover_voice_cursor := 0
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
-	var buttons := [play_button, settings_button, quit_button, no_button, yes_button]
+	var buttons := [play_button, settings_button, quit_button, multiplayer_button, no_button, yes_button]
 	for button in buttons:
 		button.focus_mode = Control.FOCUS_ALL
 		button.pressed.connect(_on_button_pressed.bind(button))
@@ -67,8 +68,10 @@ func _setup_focus_neighbors() -> void:
 	play_button.focus_neighbor_left = quit_button.get_path()
 	play_button.focus_neighbor_right = settings_button.get_path()
 	settings_button.focus_neighbor_left = play_button.get_path()
-	settings_button.focus_neighbor_right = quit_button.get_path()
-	quit_button.focus_neighbor_left = settings_button.get_path()
+	settings_button.focus_neighbor_right = multiplayer_button.get_path()
+	multiplayer_button.focus_neighbor_left = settings_button.get_path()
+	multiplayer_button.focus_neighbor_right = quit_button.get_path()
+	quit_button.focus_neighbor_left = multiplayer_button.get_path()
 	quit_button.focus_neighbor_right = play_button.get_path()
 
 	no_button.focus_neighbor_left = yes_button.get_path()
@@ -76,7 +79,7 @@ func _setup_focus_neighbors() -> void:
 	yes_button.focus_neighbor_left = no_button.get_path()
 	yes_button.focus_neighbor_right = no_button.get_path()
 
-	for button in [play_button, settings_button, quit_button, no_button, yes_button]:
+	for button in [play_button, settings_button, quit_button, multiplayer_button, no_button, yes_button]:
 		button.focus_neighbor_top = button.get_path()
 		button.focus_neighbor_bottom = button.get_path()
 
@@ -99,6 +102,10 @@ func _on_button_pressed(button: Button) -> void:
 		transitioning = true
 		await get_tree().create_timer(0.5).timeout
 		get_tree().change_scene_to_file("res://gui/fb.tscn")
+	elif button == multiplayer_button:
+		transitioning = true
+		await get_tree().create_timer(0.5).timeout
+		get_tree().change_scene_to_file("res://net/net_menu.tscn")
 	elif button == settings_button:
 		current_page = Page.SETTINGS
 		camera.global_position = SETTINGS_POS

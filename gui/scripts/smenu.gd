@@ -132,6 +132,7 @@ func _on_button_2_pressed() -> void:
 	# Unpause before leaving, otherwise the main menu would load frozen.
 	menu_music.stop()
 	settings_ui.hide_settings()
+	Net.reset()
 	get_tree().paused = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	get_tree().change_scene_to_file("res://gui/menu.tscn")
