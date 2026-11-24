@@ -10,6 +10,8 @@ script = ExtResource("1_sist8")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1078050351]
 stream = ExtResource("2_n3db6")
+bus = &"Music"
+playback_type = 1
 
 [node name="PanelContainer" type="PanelContainer" parent="." unique_id=782665365]
 process_mode = 3

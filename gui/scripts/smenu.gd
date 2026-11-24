@@ -11,7 +11,6 @@ var menu_button: Button
 @onready var menu_music: AudioStreamPlayer = $AudioStreamPlayer
 @onready var settings_ui: Variant = get_node("/root/SettingsUI")
 @onready var ui_sounds: Variant = get_node("/root/UISounds")
-@onready var settings: Variant = get_node("/root/Settings")
 
 var settings_open := false
 
@@ -34,8 +33,8 @@ func _ready() -> void:
 		button.focus_entered.connect(_on_button_focused)
 		button.mouse_entered.connect(_on_button_focused)
 	settings_ui.closed.connect(_on_settings_closed)
-	settings.changed.connect(_on_settings_changed)
-	_apply_music_volume()
+	# Music volume is handled by the Music bus (see Settings.apply_audio()), so
+	# the player only supplies the mix level and the bus does the scaling.
 	_center_panel()
 	get_viewport().size_changed.connect(_center_panel)
 
@@ -83,24 +82,11 @@ func _center_panel() -> void:
 	panel.offset_right = 430.0
 	panel.offset_bottom = 192.5
 
-func _apply_music_volume() -> void:
-	# Controlled directly so the slider always affects this player, even if the
-	# Music bus was not available when the scene was instantiated.
-	var linear := clampf(float(settings.get_value("music_volume")), 0.0, 1.0)
-	menu_music.volume_db = -80.0 if linear <= 0.001 else linear_to_db(linear)
-
-
-func _on_settings_changed(key: String, _value: Variant) -> void:
-	if key == "music_volume" or key == "__all__":
-		_apply_music_volume()
-
-
 func pause() -> void:
 	get_tree().paused = true
 	visible = true
 	_center_panel()
 	panel.visible = true
-	_apply_music_volume()
 	menu_music.play()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	# Let controller players navigate the menu without touching the mouse.

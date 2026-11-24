@@ -40,6 +40,20 @@ const RENDER_INFO_NAMES := [
 const TIME_MONITORS := [1, 2, 3, 23]
 const MEMORY_MONITORS := [4, 5, 6, 14, 15, 16]
 
+# Keys in Settings used by the Debug tab to show/hide overlay sections.
+const SECTION_SETTINGS := {
+	"timing": "debug_show_timing",
+	"monitors": "debug_show_monitors",
+	"rendering": "debug_show_rendering",
+	"memory": "debug_show_memory",
+	"physics": "debug_show_physics",
+	"audio": "debug_show_audio",
+	"input": "debug_show_input",
+	"display": "debug_show_display",
+	"engine": "debug_show_engine",
+	"scene": "debug_show_scene",
+}
+
 
 class DebugGraph extends Control:
 	const HISTORY := 240
@@ -68,6 +82,11 @@ class DebugGraph extends Control:
 		_scale = lerpf(_scale, maxf(33.0, peak * 1.15), 0.08)
 		if is_visible_in_tree():
 			queue_redraw()
+
+	func clear() -> void:
+		for i in data.size():
+			data[i] = PackedFloat32Array()
+		queue_redraw()
 
 	func _draw() -> void:
 		var w := size.x
@@ -108,6 +127,8 @@ var _history := PackedFloat32Array()
 var _process_history := PackedFloat32Array()
 var _physics_history := PackedFloat32Array()
 var _refresh_accum := 0.0
+var _refresh_interval := REFRESH_INTERVAL
+var settings: Node
 
 
 func _ready() -> void:
@@ -115,6 +136,15 @@ func _ready() -> void:
 	layer = 120
 	visible = false
 	_build_ui()
+	settings = get_node_or_null("/root/Settings")
+	_apply_settings()
+	apply_gameplay_settings()
+	if settings != null:
+		settings.changed.connect(_on_settings_changed)
+	get_tree().scene_changed.connect(_on_scene_changed)
+	# Opening here (rather than in _build_ui) avoids touching a half-built UI
+	# while autoloads are still initializing.
+	call_deferred("_apply_startup_visibility")
 
 
 func _build_ui() -> void:
@@ -202,10 +232,7 @@ func _scroll_reader(code: int) -> void:
 
 
 func show_menu() -> void:
-	if _history.is_empty():
-		_history.append(0.0)
-		_process_history.append(0.0)
-		_physics_history.append(0.0)
+	_show_seed_sample()
 	# Deliberately leave the mouse mode alone: F3 must not free the cursor
 	# during gameplay. Scroll with PgUp/PgDn/Home/End instead.
 	visible = true
@@ -214,6 +241,122 @@ func show_menu() -> void:
 
 func hide_menu() -> void:
 	visible = false
+
+
+func toggle_menu() -> void:
+	if visible:
+		hide_menu()
+	else:
+		show_menu()
+
+
+func reset_history() -> void:
+	_history.clear()
+	_process_history.clear()
+	_physics_history.clear()
+	_show_seed_sample()
+	if _graph != null:
+		_graph.clear()
+	_refresh_accum = 0.0
+	if visible:
+		_refresh()
+
+
+func get_snapshot() -> String:
+	if _history.is_empty():
+		_show_seed_sample()
+	return "\n".join(_build_report())
+
+
+func copy_snapshot() -> void:
+	DisplayServer.clipboard_set(get_snapshot())
+
+
+func _show_seed_sample() -> void:
+	if _history.is_empty():
+		_history.append(0.0)
+		_process_history.append(0.0)
+		_physics_history.append(0.0)
+
+
+func _on_settings_changed(key: String, _value: Variant) -> void:
+	if key == "__all__" or key.begins_with("debug_"):
+		_apply_settings()
+		apply_gameplay_settings()
+		match key:
+			"debug_overlay_startup", "__all__":
+				_apply_startup_visibility()
+
+
+func _apply_startup_visibility() -> void:
+	if not _setting("debug_overlay_startup", false):
+		return
+	show_menu()
+
+
+func _apply_settings() -> void:
+	if _graph != null:
+		_graph.visible = bool(_setting("debug_graph", true))
+	_refresh_interval = clampf(float(_setting("debug_refresh_interval", REFRESH_INTERVAL)), 0.05, 1.0)
+	if visible:
+		_refresh()
+
+
+func _setting(key: String, fallback: Variant) -> Variant:
+	if settings == null:
+		return fallback
+	return settings.get_value(key, fallback)
+
+
+func _section_enabled(section: String) -> bool:
+	var key: String = SECTION_SETTINGS.get(section, "")
+	if key.is_empty():
+		return true
+	return bool(_setting(key, true))
+
+
+func _on_scene_changed() -> void:
+	# New players and worlds need the current tuning reapplied after they load.
+	call_deferred("apply_gameplay_settings")
+
+
+func apply_gameplay_settings() -> void:
+	_apply_world_gravity()
+	Engine.time_scale = clampf(float(_setting("debug_game_speed", 1.0)), -20.0, 20.0)
+	Engine.physics_ticks_per_second = clampi(int(_setting("debug_physics_ticks", 60)), 1, 1000)
+	_apply_player_values()
+	if visible:
+		_refresh()
+
+
+func _apply_world_gravity() -> void:
+	var viewport: Viewport = get_viewport()
+	if viewport == null:
+		return
+	var world: World3D = viewport.world_3d
+	if world == null:
+		return
+	var space: RID = world.space
+	if not space.is_valid():
+		return
+	var gravity := clampf(float(_setting("debug_gravity", 9.8)), -1000.0, 1000.0)
+	PhysicsServer3D.area_set_param(space, PhysicsServer3D.AREA_PARAM_GRAVITY, gravity)
+
+
+func _apply_player_values() -> void:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return
+	var jump := clampf(float(_setting("debug_jump_strength", 4.5)), -500.0, 500.0)
+	for node in tree.get_nodes_in_group("player"):
+		node.set("gravity", clampf(float(_setting("debug_gravity", 9.8)), -1000.0, 1000.0))
+		node.set("walk_speed", clampf(float(_setting("debug_walk_speed", 5.0)), -500.0, 500.0))
+		node.set("sprint_speed", clampf(float(_setting("debug_sprint_speed", 10.0)), -1000.0, 1000.0))
+		node.set("lowjump", jump)
+		node.set("highjump", jump * 2.0)
+		node.set("curjump", jump)
+		node.set("pickup_range", clampf(float(_setting("debug_pickup_range", 4.0)), -100.0, 100.0))
+		node.set("hold_distance", clampf(float(_setting("debug_hold_distance", 3.0)), -100.0, 100.0))
 
 
 func _process(delta: float) -> void:
@@ -230,7 +373,7 @@ func _process(delta: float) -> void:
 	_graph.add_samples([frame_ms, _process_history[_process_history.size() - 1], _physics_history[_physics_history.size() - 1]])
 
 	_refresh_accum += delta
-	if visible and _refresh_accum >= REFRESH_INTERVAL:
+	if visible and _refresh_accum >= _refresh_interval:
 		_refresh_accum = 0.0
 		_refresh()
 
@@ -238,18 +381,32 @@ func _process(delta: float) -> void:
 func _refresh() -> void:
 	if _reader == null:
 		return
+	_reader.text = "\n".join(_build_report())
+
+
+func _build_report() -> PackedStringArray:
 	var lines := PackedStringArray()
-	_add_timing(lines)
-	_add_performance_monitors(lines)
-	_add_rendering(lines)
-	_add_memory(lines)
-	_add_physics(lines)
-	_add_audio(lines)
-	_add_input(lines)
-	_add_display(lines)
-	_add_engine_os(lines)
-	_add_scene(lines)
-	_reader.text = "\n".join(lines)
+	if _section_enabled("timing"):
+		_add_timing(lines)
+	if _section_enabled("monitors"):
+		_add_performance_monitors(lines)
+	if _section_enabled("rendering"):
+		_add_rendering(lines)
+	if _section_enabled("memory"):
+		_add_memory(lines)
+	if _section_enabled("physics"):
+		_add_physics(lines)
+	if _section_enabled("audio"):
+		_add_audio(lines)
+	if _section_enabled("input"):
+		_add_input(lines)
+	if _section_enabled("display"):
+		_add_display(lines)
+	if _section_enabled("engine"):
+		_add_engine_os(lines)
+	if _section_enabled("scene"):
+		_add_scene(lines)
+	return lines
 
 
 func _row(lines: PackedStringArray, key: String, value: Variant) -> void:
@@ -369,6 +526,8 @@ func _add_physics(lines: PackedStringArray) -> void:
 	_row(lines, "  3D active objects", PhysicsServer3D.get_process_info(PhysicsServer3D.INFO_ACTIVE_OBJECTS))
 	_row(lines, "  3D collision pairs", PhysicsServer3D.get_process_info(PhysicsServer3D.INFO_COLLISION_PAIRS))
 	_row(lines, "  3D islands", PhysicsServer3D.get_process_info(PhysicsServer3D.INFO_ISLAND_COUNT))
+	_row(lines, "World gravity", "%s m/s^2" % _num(float(_setting("debug_gravity", 9.8)), 2))
+	_row(lines, "Game speed", "%sx" % _num(float(_setting("debug_game_speed", 1.0)), 2))
 	_row(lines, "In physics frame", Engine.is_in_physics_frame())
 
 

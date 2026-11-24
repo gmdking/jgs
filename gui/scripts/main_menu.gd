@@ -50,12 +50,14 @@ func _ready() -> void:
 
 func _build_voice_pool(template: AudioStreamPlayer, pool: Array[AudioStreamPlayer]) -> void:
 	template.bus = "SFX"
+	template.playback_type = AudioServer.PLAYBACK_TYPE_STREAM
 	pool.append(template)
 	for i in range(1, VOICES):
 		var voice := AudioStreamPlayer.new()
 		voice.stream = template.stream
 		voice.bus = "SFX"
 		voice.volume_db = template.volume_db
+		voice.playback_type = AudioServer.PLAYBACK_TYPE_STREAM
 		add_child(voice)
 		pool.append(voice)
 

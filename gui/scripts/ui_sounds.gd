@@ -32,6 +32,9 @@ func _build_pool(pool: Array[AudioStreamPlayer], stream: AudioStream) -> void:
 		var voice := AudioStreamPlayer.new()
 		voice.stream = stream
 		voice.bus = "SFX"
+		# Web exports default to stream playback for this project; set it here
+		# as well so these pooled voices work even with older saved settings.
+		voice.playback_type = AudioServer.PLAYBACK_TYPE_STREAM
 		add_child(voice)
 		pool.append(voice)
 

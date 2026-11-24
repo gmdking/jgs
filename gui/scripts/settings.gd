@@ -47,6 +47,33 @@ const DEFAULTS := {
 	"debanding": false,
 	"borderless": false,
 	"always_on_top": false,
+
+	# Debug overlay (Settings > Debug tab / F3)
+	"debug_overlay_startup": false,
+	"debug_graph": true,
+	"debug_refresh_interval": 0.1,
+	"debug_show_timing": true,
+	"debug_show_monitors": true,
+	"debug_show_rendering": true,
+	"debug_show_memory": true,
+	"debug_show_physics": true,
+	"debug_show_audio": true,
+	"debug_show_input": true,
+	"debug_show_display": true,
+	"debug_show_engine": true,
+	"debug_show_scene": true,
+
+	# Debug gameplay tuning. These apply immediately and persist so testers can
+	# keep the same sandbox setup between launches.
+	"debug_gravity": 9.8,
+	"debug_game_speed": 1.0,
+	"debug_walk_speed": 5.0,
+	"debug_sprint_speed": 10.0,
+	"debug_jump_strength": 4.5,
+	"debug_pickup_range": 4.0,
+	"debug_hold_distance": 3.0,
+	"debug_physics_ticks": 60,
+
 	"config_version": 2,
 }
 
@@ -62,6 +89,9 @@ func _ready() -> void:
 
 	_capture_input_defaults()
 	_load()
+	# The buses normally come from res://default_bus_layout.tres, which is
+	# required for audio to work in exported Web builds. Keep these as a safety
+	# net for old projects/configs where the layout has not been applied yet.
 	_ensure_bus("Music")
 	_ensure_bus("SFX")
 	apply_all()
@@ -204,7 +234,38 @@ func action_display(action: StringName) -> String:
 	return ", ".join(labels)
 
 
+# Slot 0 is the primary binding, slot 1 is the optional secondary binding.
+# Any further events (controller defaults, etc.) are left untouched.
+func binding_display(action: StringName, slot: int) -> String:
+	var events := InputMap.action_get_events(action)
+	if slot >= 0 and slot < events.size():
+		var event: InputEvent = events[slot]
+		if _is_unbound_event(event):
+			return "Unbound"
+		return event_label(event)
+	return "Unbound"
+
+
+# A cleared slot keeps an inert placeholder so later default bindings do not
+# shift up and appear as the secondary. It can never match real player input.
+func _unbound_event() -> InputEventKey:
+	var event := InputEventKey.new()
+	event.keycode = 0
+	event.physical_keycode = 0
+	event.pressed = false
+	return event
+
+
+func _is_unbound_event(event: InputEvent) -> bool:
+	if not event is InputEventKey:
+		return false
+	var key := event as InputEventKey
+	return key.keycode == 0 and key.physical_keycode == 0 and not key.pressed
+
+
 func event_label(event: InputEvent) -> String:
+	if _is_unbound_event(event):
+		return "Unbound"
 	if event is InputEventKey:
 		var key := event as InputEventKey
 		var text := OS.get_keycode_string(key.keycode)
@@ -236,7 +297,7 @@ func event_label(event: InputEvent) -> String:
 func is_rebindable(event: InputEvent) -> bool:
 	if event is InputEventKey:
 		var key := event as InputEventKey
-		return key.pressed and not key.is_echo() and key.keycode != KEY_ESCAPE
+		return key.pressed and not key.is_echo() and key.keycode != KEY_ESCAPE and not (key.keycode == 0 and key.physical_keycode == 0)
 	if event is InputEventMouseButton:
 		return (event as InputEventMouseButton).pressed
 	if event is InputEventJoypadButton:
@@ -247,17 +308,51 @@ func is_rebindable(event: InputEvent) -> bool:
 
 
 func rebind_action(action: StringName, event: InputEvent) -> void:
-	if not InputMap.has_action(action):
+	set_binding(action, 0, event)
+
+
+func set_binding(action: StringName, slot: int, event: InputEvent) -> void:
+	if not InputMap.has_action(action) or not is_rebindable(event):
 		return
 	var serialized := serialize_event(event)
+	# A binding can only belong to one action/slot at a time.
 	for other in InputMap.get_actions():
-		if other == action:
-			continue
-		for existing in InputMap.action_get_events(other):
+		for existing in InputMap.action_get_events(other).duplicate():
 			if serialize_event(existing) == serialized:
 				InputMap.action_erase_event(other, existing)
+
+	var events: Array = InputMap.action_get_events(action).duplicate()
+	var target_slot := slot
+	# Secondary needs a primary to sit behind; fall back to primary if missing.
+	if target_slot == 1 and events.is_empty():
+		target_slot = 0
+	if target_slot < events.size():
+		events[target_slot] = event
+	else:
+		events.append(event)
+
 	InputMap.action_erase_events(action)
-	InputMap.action_add_event(action, event)
+	for item in events:
+		InputMap.action_add_event(action, item)
+	_save_input()
+
+
+func clear_binding(action: StringName, slot: int) -> void:
+	if not InputMap.has_action(action):
+		return
+	var events: Array = InputMap.action_get_events(action).duplicate()
+	if slot < 0 or slot >= events.size():
+		events.resize(slot + 1)
+		for i in events.size():
+			if events[i] == null:
+				events[i] = _unbound_event()
+	elif not _is_unbound_event(events[slot]):
+		events[slot] = _unbound_event()
+	else:
+		return
+	InputMap.action_erase_events(action)
+	for item in events:
+		InputMap.action_add_event(action, item)
 	_save_input()
 
 
@@ -279,6 +374,21 @@ func reset_all() -> void:
 	apply_all()
 	config.save(CONFIG_PATH)
 	changed.emit("__all__", values)
+
+
+func reset_keys(keys: Array) -> void:
+	var reset: Array[String] = []
+	for key in keys:
+		var key_name := str(key)
+		if not DEFAULTS.has(key_name):
+			continue
+		values[key_name] = DEFAULTS[key_name]
+		config.set_value("settings", key_name, values[key_name])
+		reset.append(key_name)
+	apply_all()
+	config.save(CONFIG_PATH)
+	for key_name in reset:
+		changed.emit(key_name, values[key_name])
 
 
 func serialize_event(event: InputEvent) -> Dictionary:

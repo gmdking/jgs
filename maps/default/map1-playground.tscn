@@ -1289,10 +1289,12 @@ transform = Transform3D(-0.67729974, 0, 0.73570716, 0, 1, 0, -0.73570716, 0, -0.
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="CharacterBody3D" unique_id=1356443370]
 stream = ExtResource("25_iidna")
+bus = &"Music"
 volume_db = -20.075
 autoplay = true
 max_distance = 4096.0
 panning_strength = 0.0
+playback_type = 1
 
 [node name="RigidBody3D" parent="." unique_id=1798526633 instance=ExtResource("27_v5xu6")]
 transform = Transform3D(0.14367767, 0, 0, 0, 0.14367767, 0, 0, 0, 0.14367767, -5.082555, 0.0929842, -1.5592852)

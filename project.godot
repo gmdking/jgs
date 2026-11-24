@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="JGS"
+config/version="b1.1.0"
 run/main_scene="uid://c15qrd2w5kk6l"
 config/features=PackedStringArray("4.7", "Forward Plus")
 boot_splash/use_filter=false
@@ -172,5 +173,4 @@ scaledown={
 
 [rendering]
 
-rendering_device/driver.windows="d3d12"
 textures/vram_compression/import_etc2_astc=true

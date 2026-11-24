@@ -9,6 +9,7 @@ var tabs: TabContainer
 var first_focus: Control
 var rebind_action := StringName()
 var rebind_button: Button
+var rebind_slot := 0
 var listening := false
 
 @onready var ui_sounds: Variant = get_node("/root/UISounds")
@@ -22,9 +23,27 @@ var option_values: Dictionary = {}
 var option_inputs: Dictionary = {}
 var color_buttons: Dictionary = {}
 var control_buttons: Dictionary = {}
+var secondary_buttons: Dictionary = {}
+var clear_secondary_buttons: Dictionary = {}
 
 const CROSSHAIR_STYLES := ["Off", "Dot", "Cross", "Ring", "Open Cross"]
 const RESOLUTION_LABELS := ["Native", "1280x720", "1600x900", "1920x1080", "2560x1440", "3840x2160"]
+const DEBUG_SECTIONS := [
+	["timing", "Frame timing"],
+	["monitors", "Performance monitors"],
+	["rendering", "Rendering"],
+	["memory", "Memory"],
+	["physics", "Physics servers"],
+	["audio", "Audio"],
+	["input", "Input"],
+	["display", "Display"],
+	["engine", "Engine / OS"],
+	["scene", "Scene tree"],
+]
+const DEBUG_GAMEPLAY_KEYS := [
+	"debug_gravity", "debug_game_speed", "debug_walk_speed", "debug_sprint_speed",
+	"debug_jump_strength", "debug_pickup_range", "debug_hold_distance", "debug_physics_ticks",
+]
 const FPS_VALUES := [0, 30, 60, 120, 144, 240]
 const CUSTOM_VALUE := "__custom__"
 
@@ -84,6 +103,7 @@ func _build_ui() -> void:
 	_build_graphics_tab(_tab("Graphics"))
 	_build_customization_tab(_tab("Customization"))
 	_build_controls_tab(_tab("Controls"))
+	_build_debug_tab(_tab("Debug"))
 	_build_help_tab(_tab("Help"))
 
 	var buttons := HBoxContainer.new()
@@ -185,7 +205,7 @@ func _build_customization_tab(parent: Control) -> void:
 
 func _build_controls_tab(parent: Control) -> void:
 	var info := Label.new()
-	info.text = "Select an action, then press any key, mouse button, or controller input. To cancel the input selection, press ESC."
+	info.text = "Select Primary or Secondary, then press a key, mouse button, or controller input. Secondary is optional; press ESC to cancel."
 	info.add_theme_color_override("font_color", Color(0.7, 0.75, 0.85))
 	parent.add_child(info)
 
@@ -199,17 +219,120 @@ func _build_controls_tab(parent: Control) -> void:
 		label.custom_minimum_size.x = 220
 		row.add_child(label)
 
-		var button := Button.new()
-		button.text = str(settings.action_display(action))
-		button.custom_minimum_size.x = 420
-		button.pressed.connect(_on_rebind_pressed.bind(action, button))
-		row.add_child(button)
-		control_buttons[action] = button
+		var primary := Button.new()
+		primary.text = str(settings.binding_display(action, 0))
+		primary.custom_minimum_size.x = 260
+		primary.pressed.connect(_on_rebind_pressed.bind(action, primary, 0))
+		row.add_child(primary)
+		control_buttons[action] = primary
+
+		var secondary := Button.new()
+		secondary.text = str(settings.binding_display(action, 1))
+		secondary.custom_minimum_size.x = 260
+		secondary.pressed.connect(_on_rebind_pressed.bind(action, secondary, 1))
+		row.add_child(secondary)
+		secondary_buttons[action] = secondary
+
+		var clear := Button.new()
+		clear.text = "Clear"
+		clear.disabled = settings.binding_display(action, 1) == "Unbound"
+		clear.pressed.connect(_on_clear_secondary.bind(action))
+		row.add_child(clear)
+		clear_secondary_buttons[action] = clear
 
 	var reset := Button.new()
 	reset.text = "Reset Controls to Default"
 	reset.pressed.connect(_on_reset_controls)
 	parent.add_child(reset)
+
+
+func _build_debug_tab(parent: Control) -> void:
+	_add_section(parent, "Debug overlay")
+	_add_check(parent, "Show overlay on startup", "debug_overlay_startup")
+	_add_check(parent, "Show frame graph", "debug_graph")
+	_add_slider(parent, "Refresh interval", "debug_refresh_interval", 0.05, 1.0, 0.05, "s")
+
+	var toggle := Button.new()
+	toggle.text = "Toggle overlay (F3)"
+	toggle.pressed.connect(_on_debug_toggle)
+	parent.add_child(toggle)
+
+	var copy_report := Button.new()
+	copy_report.text = "Copy debug report to clipboard"
+	copy_report.pressed.connect(_on_debug_copy)
+	parent.add_child(copy_report)
+
+	var reset := Button.new()
+	reset.text = "Reset frame history"
+	reset.pressed.connect(_on_debug_reset)
+	parent.add_child(reset)
+
+	_add_section(parent, "Overlay sections")
+	for entry in DEBUG_SECTIONS:
+		_add_check(parent, str(entry[1]), "debug_show_" + str(entry[0]))
+
+	_add_section(parent, "Gameplay tuning")
+	_add_slider(parent, "Gravity", "debug_gravity", -1000.0, 1000.0, 0.1, "m/s")
+	_add_slider(parent, "Game speed", "debug_game_speed", -20.0, 20.0, 0.05, "x")
+	_add_slider(parent, "Walk speed", "debug_walk_speed", -500.0, 500.0, 0.5, "m/s")
+	_add_slider(parent, "Sprint speed", "debug_sprint_speed", -1000.0, 1000.0, 1.0, "m/s")
+	_add_slider(parent, "Jump strength", "debug_jump_strength", -500.0, 500.0, 0.5, "m/s")
+	_add_slider(parent, "Pickup range", "debug_pickup_range", -100.0, 100.0, 0.5, "m")
+	_add_slider(parent, "Hold distance", "debug_hold_distance", -100.0, 100.0, 0.5, "m")
+	_add_slider(parent, "Physics ticks", "debug_physics_ticks", 1.0, 1000.0, 1.0, "Hz")
+
+	var presets := HBoxContainer.new()
+	for speed in [-2.0, 0.0, 0.25, 1.0, 2.0]:
+		var preset := Button.new()
+		preset.text = "Freeze" if is_equal_approx(float(speed), 0.0) else "%sx" % str(speed)
+		preset.pressed.connect(_on_game_speed_preset.bind(float(speed)))
+		presets.add_child(preset)
+	parent.add_child(presets)
+
+	var reset_gameplay := Button.new()
+	reset_gameplay.text = "Reset gameplay tuning"
+	reset_gameplay.pressed.connect(_on_debug_reset_gameplay)
+	parent.add_child(reset_gameplay)
+
+	var note := Label.new()
+	note.text = "Gameplay values apply immediately, persist between launches, and accept absurd/negative values. Physics ticks must stay positive. 0x freezes simulation; F3 toggles the overlay."
+	note.add_theme_color_override("font_color", Color(0.7, 0.75, 0.85))
+	parent.add_child(note)
+
+
+func _debug_menu() -> Node:
+	return get_node_or_null("/root/DebugMenu")
+
+
+func _on_debug_toggle() -> void:
+	var debug := _debug_menu()
+	if debug != null:
+		debug.call("toggle_menu")
+
+
+func _on_debug_copy() -> void:
+	var debug := _debug_menu()
+	if debug != null:
+		debug.call("copy_snapshot")
+
+
+func _on_debug_reset() -> void:
+	var debug := _debug_menu()
+	if debug != null:
+		debug.call("reset_history")
+
+
+func _on_debug_reset_gameplay() -> void:
+	settings.reset_keys(DEBUG_GAMEPLAY_KEYS)
+	_refresh_inputs()
+
+
+func _on_game_speed_preset(value: float) -> void:
+	settings.set_value("debug_game_speed", value)
+	var slider: HSlider = sliders.get("debug_game_speed")
+	if slider != null:
+		slider.value = value
+	_refresh_inputs()
 
 
 func _build_help_tab(parent: Control) -> void:
@@ -241,8 +364,9 @@ func _build_help_tab(parent: Control) -> void:
 		"Debug",
 		"  F3 toggles the debug overlay (FPS, frametimes, and every available",
 		"  performance counter). PgUp/PgDn scroll it, Esc closes it.",
+		"  The Debug tab also tunes gravity, game speed, movement, and physics ticks.",
 		"",
-		"All game controls can be rebound in the Controls tab.",
+		"All game controls can be rebound in the Controls tab, with optional Primary and Secondary slots.",
 	])
 	var text := RichTextLabel.new()
 	text.scroll_active = false
@@ -365,8 +489,12 @@ func _format_value(value: float, suffix: String) -> String:
 	match suffix:
 		"%": return "%d%%" % int(value * 100.0)
 		"x": return "%.2fx" % value
+		"s": return "%.2fs" % value
 		"sens": return "%.4f" % value
 		"px": return "%d px" % int(value)
+		"m/s": return "%.2f m/s" % value
+		"m": return "%.2f m" % value
+		"Hz": return "%d Hz" % int(value)
 	return "%.2f" % value
 
 
@@ -390,7 +518,7 @@ func _apply_slider_text(key: String, min_value: float, max_value: float, suffix:
 	var slider: HSlider = sliders.get(key)
 	if slider == null:
 		return
-	var text := input.text.strip_edges().replace("%", "").replace("x", "").replace("sens", "").replace(",", "")
+	var text := input.text.strip_edges().replace("m/s", "").replace("Hz", "").replace("sens", "").replace("%", "").replace("x", "").replace("s", "").replace("m", "").replace(",", "").strip_edges()
 	if text.is_empty():
 		input.text = _format_value(slider.value, suffix)
 		return
@@ -486,7 +614,7 @@ func _wire_ui_sounds() -> void:
 		elif control is Button:
 			control.pressed.connect(_play_click)
 		if control is Slider:
-			control.value_changed.connect(_play_click_arg)
+			control.value_changed.connect(_play_hover_arg)
 		if control is LineEdit:
 			control.text_submitted.connect(_play_click_arg)
 		if control is TabBar:
@@ -514,14 +642,24 @@ func _play_click_arg(_unused: Variant) -> void:
 	ui_sounds.play_click()
 
 
-func _on_rebind_pressed(action: StringName, button: Button) -> void:
+func _play_hover_arg(_unused: Variant) -> void:
+	ui_sounds.play_hover()
+
+
+func _on_rebind_pressed(action: StringName, button: Button, slot: int) -> void:
 	if listening and rebind_button != null:
-		rebind_button.text = str(settings.action_display(rebind_action))
+		rebind_button.text = str(settings.binding_display(rebind_action, rebind_slot))
 	rebind_action = action
 	rebind_button = button
+	rebind_slot = slot
 	listening = true
 	button.text = "Press a key / button..."
 	button.grab_focus()
+
+
+func _on_clear_secondary(action: StringName) -> void:
+	settings.clear_binding(action, 1)
+	_refresh_controls()
 
 
 func _on_reset_controls() -> void:
@@ -537,8 +675,14 @@ func _on_reset_all() -> void:
 
 func _refresh_controls() -> void:
 	for action in control_buttons.keys():
-		var button: Button = control_buttons[action]
-		button.text = str(settings.action_display(action))
+		var primary: Button = control_buttons[action]
+		primary.text = str(settings.binding_display(action, 0))
+		var secondary: Button = secondary_buttons.get(action)
+		if secondary != null:
+			secondary.text = str(settings.binding_display(action, 1))
+		var clear: Button = clear_secondary_buttons.get(action)
+		if clear != null:
+			clear.disabled = settings.binding_display(action, 1) == "Unbound"
 
 
 func _refresh_inputs() -> void:
@@ -567,7 +711,11 @@ func _refresh_inputs() -> void:
 func _suffix_for(key: String) -> String:
 	match key:
 		"music_volume", "sfx_volume": return "%"
-		"render_scale": return "x"
+		"render_scale", "debug_game_speed": return "x"
+		"debug_refresh_interval": return "s"
+		"debug_gravity", "debug_walk_speed", "debug_sprint_speed", "debug_jump_strength": return "m/s"
+		"debug_pickup_range", "debug_hold_distance": return "m"
+		"debug_physics_ticks": return "Hz"
 		"mouse_sensitivity", "controller_sensitivity": return "sens"
 		"crosshair_size", "crosshair_thickness", "crosshair_gap": return "px"
 	return ""
@@ -582,6 +730,8 @@ func show_settings() -> void:
 func hide_settings() -> void:
 	listening = false
 	rebind_button = null
+	rebind_action = StringName()
+	rebind_slot = 0
 	visible = false
 
 
@@ -603,7 +753,7 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 		if settings.is_rebindable(event):
-			settings.rebind_action(rebind_action, event)
+			settings.set_binding(rebind_action, rebind_slot, event)
 			_cancel_rebind()
 			get_viewport().set_input_as_handled()
 		return
@@ -618,7 +768,8 @@ func _input(event: InputEvent) -> void:
 
 func _cancel_rebind() -> void:
 	if rebind_button != null:
-		rebind_button.text = str(settings.action_display(rebind_action))
+		rebind_button.text = str(settings.binding_display(rebind_action, rebind_slot))
 	listening = false
 	rebind_button = null
 	rebind_action = StringName()
+	rebind_slot = 0
