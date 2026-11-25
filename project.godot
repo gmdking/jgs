@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="JGS"
-config/version="b1.1.1"
+config/version="b2.0.0"
 run/main_scene="uid://c15qrd2w5kk6l"
 config/features=PackedStringArray("4.7", "Forward Plus")
 boot_splash/use_filter=false

@@ -84,7 +84,7 @@ offset_top = 603.0
 offset_right = 114.0
 offset_bottom = 862.0
 theme = SubResource("Theme_l48gv")
-text = "version b1.1.1"
+text = "version b2.0.0"
 
 [node name="Text" type="Node2D" parent="." unique_id=1721397417]
 position = Vector2(-1088, -591)
