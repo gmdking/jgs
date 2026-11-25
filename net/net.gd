@@ -1,11 +1,4 @@
 extends Node
-## Minimal TCP/IP multiplayer for JGS.
-##
-## The host is authoritative: it owns the map, runs physics, computes every
-## interaction (pickup, throw, duplicate, delete, scale) and broadcasts the
-## resulting object state. Clients only send intents and follow snapshots.
-##
-## Wire format: 4-byte big-endian payload length + UTF-8 JSON object.
 
 const PLAYER_HZ := 30.0
 const OBJECT_HZ := 30.0

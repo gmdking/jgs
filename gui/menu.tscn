@@ -211,11 +211,11 @@ autowrap_mode = 3
 autowrap_trim_flags = 0
 
 [node name="Multiplayer" type="Button" parent="Buttons/Main" unique_id=1823467291]
-offset_left = 609.0
-offset_top = 130.0
-offset_right = 929.0
-offset_bottom = 385.0
-tooltip_text = "Host a game or join one over TCP/IP."
+offset_left = 902.0
+offset_top = 430.0
+offset_right = 1127.105
+offset_bottom = 632.0
+tooltip_text = "This is extremely experimental."
 theme = SubResource("Theme_ouk20")
 button_group = SubResource("ButtonGroup_heart")
 text = "Multiplayer"

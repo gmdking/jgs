@@ -298,6 +298,9 @@ func _build_debug_tab(parent: Control) -> void:
 
 	var note := Label.new()
 	note.text = "Gameplay values apply immediately, persist between launches, and accept absurd/negative values. Physics ticks must stay positive. 0x freezes simulation; F3 toggles the overlay. Physics always keeps running while paused in multiplayer."
+	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	note.custom_minimum_size.x = 0.0
+	note.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	note.add_theme_color_override("font_color", Color(0.7, 0.75, 0.85))
 	parent.add_child(note)
 

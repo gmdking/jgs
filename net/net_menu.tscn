@@ -36,6 +36,7 @@ horizontal_alignment = 1
 
 [node name="Hint" type="Label" parent="Panel/VBox" unique_id=1478174987]
 layout_mode = 2
+text = "Okay, I've done what is essentially 15% of the work required to make functional, fun multiplayer. Playing this is NOT at ALL recommended, this is here more for testing than anything. Expect this to slowly but surely mature, until this text blurb isn't needed anymore. Multiplayer runs at 30hz, set your fps to 30fps if you have any issues with vision. Please only play this with people you trust, there are likely thousands of security vulnerabilites."
 horizontal_alignment = 1
 autowrap_mode = 3
 
