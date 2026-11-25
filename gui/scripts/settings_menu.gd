@@ -43,6 +43,7 @@ const DEBUG_SECTIONS := [
 const DEBUG_GAMEPLAY_KEYS := [
 	"debug_gravity", "debug_game_speed", "debug_walk_speed", "debug_sprint_speed",
 	"debug_jump_strength", "debug_pickup_range", "debug_hold_distance", "debug_physics_ticks",
+	"debug_keep_physics_during_pause",
 ]
 const FPS_VALUES := [0, 30, 60, 120, 144, 240]
 const CUSTOM_VALUE := "__custom__"
@@ -272,6 +273,7 @@ func _build_debug_tab(parent: Control) -> void:
 		_add_check(parent, str(entry[1]), "debug_show_" + str(entry[0]))
 
 	_add_section(parent, "Gameplay tuning")
+	_add_check(parent, "Keep physics running while paused", "debug_keep_physics_during_pause")
 	_add_slider(parent, "Gravity", "debug_gravity", -1000.0, 1000.0, 0.1, "m/s")
 	_add_slider(parent, "Game speed", "debug_game_speed", -20.0, 20.0, 0.05, "x")
 	_add_slider(parent, "Walk speed", "debug_walk_speed", -500.0, 500.0, 0.5, "m/s")
@@ -295,7 +297,7 @@ func _build_debug_tab(parent: Control) -> void:
 	parent.add_child(reset_gameplay)
 
 	var note := Label.new()
-	note.text = "Gameplay values apply immediately, persist between launches, and accept absurd/negative values. Physics ticks must stay positive. 0x freezes simulation; F3 toggles the overlay."
+	note.text = "Gameplay values apply immediately, persist between launches, and accept absurd/negative values. Physics ticks must stay positive. 0x freezes simulation; F3 toggles the overlay. Physics always keeps running while paused in multiplayer."
 	note.add_theme_color_override("font_color", Color(0.7, 0.75, 0.85))
 	parent.add_child(note)
 

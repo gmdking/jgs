@@ -14,6 +14,31 @@ var menu_button: Button
 
 var settings_open := false
 
+
+func _physics_keeps_running() -> bool:
+	# The host simulates physics for everyone, so its pause menu must never
+	# stop the SceneTree. The debug option allows the same behavior offline.
+	if Net.is_active():
+		return true
+	var config := get_node_or_null("/root/Settings")
+	return config != null and bool(config.get_value("debug_keep_physics_during_pause", false))
+
+
+func _set_local_players_paused(value: bool) -> void:
+	for node in get_tree().get_nodes_in_group("player"):
+		if is_instance_valid(node) and node.get("menu_open") != null:
+			node.set("menu_open", value)
+
+
+func _process(_delta: float) -> void:
+	# Reapply immediately if the debug option is flipped while already paused.
+	if not visible:
+		return
+	var should_pause := not _physics_keeps_running()
+	if get_tree().paused != should_pause:
+		get_tree().paused = should_pause
+
+
 func _ready() -> void:
 	# The menu is an overlay: it starts hidden and only appears while paused.
 	visible = false
@@ -67,7 +92,9 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func toggle_pause() -> void:
-	if get_tree().paused:
+	# The tree may stay unpaused (multiplayer / debug option), so the menu's own
+	# visibility is the source of truth for whether we are paused.
+	if visible:
 		resume()
 	else:
 		pause()
@@ -83,7 +110,8 @@ func _center_panel() -> void:
 	panel.offset_bottom = 192.5
 
 func pause() -> void:
-	get_tree().paused = true
+	get_tree().paused = not _physics_keeps_running()
+	_set_local_players_paused(true)
 	visible = true
 	_center_panel()
 	panel.visible = true
@@ -95,6 +123,7 @@ func pause() -> void:
 
 func resume() -> void:
 	get_tree().paused = false
+	_set_local_players_paused(false)
 	settings_open = false
 	visible = false
 	panel.visible = true
@@ -133,6 +162,7 @@ func _on_button_2_pressed() -> void:
 	menu_music.stop()
 	settings_ui.hide_settings()
 	Net.reset()
+	_set_local_players_paused(false)
 	get_tree().paused = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	get_tree().change_scene_to_file("res://gui/menu.tscn")

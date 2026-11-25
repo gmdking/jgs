@@ -36,6 +36,10 @@ func _ready():
 		ray.enabled = true
 
 func _input(event):
+	# While the pause menu is open the tree may keep running (multiplayer /
+	# debug option), so ignore gameplay input explicitly.
+	if menu_open:
+		return
 	#camera movement
 	if event is InputEventMouseMotion:
 		rotate_y(-event.relative.x * mouse_sensitivity)
@@ -53,6 +57,8 @@ func _input(event):
 		delete_target()
 
 func _physics_process(delta):
+	if menu_open:
+		return
 	#controller right thumbstick camera look
 	var look_x := Input.get_axis("look_left", "look_right")
 	var look_y := Input.get_axis("look_up", "look_down")

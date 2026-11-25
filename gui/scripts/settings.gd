@@ -73,6 +73,7 @@ const DEFAULTS := {
 	"debug_pickup_range": 4.0,
 	"debug_hold_distance": 3.0,
 	"debug_physics_ticks": 60,
+	"debug_keep_physics_during_pause": false,
 
 	"config_version": 2,
 }
