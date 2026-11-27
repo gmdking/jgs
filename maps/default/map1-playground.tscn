@@ -1296,9 +1296,9 @@ panning_strength = 0.0
 bus = &"Music"
 playback_type = 1
 
-[node name="RigidBody3D" parent="." unique_id=1798526633 instance=ExtResource("27_v5xu6")]
+[node name="orb" parent="." unique_id=1798526633 instance=ExtResource("27_v5xu6")]
 transform = Transform3D(0.14367767, 0, 0, 0, 0.14367767, 0, 0, 0, 0.14367767, -5.082555, 0.0929842, -1.5592852)
 mass = 100.0
 
-[node name="Snowglobe" parent="." unique_id=792114235 instance=ExtResource("28_snow")]
+[node name="snowglobe" parent="." unique_id=792114235 instance=ExtResource("28_snow")]
 transform = Transform3D(0.14367767, 0, 0, 0, 0.14367767, 0, 0, 0, 0.14367767, -3.8, -0.03, -1.5592852)
