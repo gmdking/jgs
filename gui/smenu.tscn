@@ -45,6 +45,10 @@ layout_mode = 2
 layout_mode = 2
 text = "Resume"
 
+[node name="Reload" type="Button" parent="PanelContainer/VBoxContainer" unique_id=429163247]
+layout_mode = 2
+text = "Reload Map"
+
 [node name="SettingsButton" type="Button" parent="PanelContainer/VBoxContainer" unique_id=1301867900]
 layout_mode = 2
 text = "Settings"
@@ -63,5 +67,6 @@ disabled = true
 text = "Enter Supermenu"
 
 [connection signal="pressed" from="PanelContainer/VBoxContainer/Resume" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/Reload" to="." method="_on_reload_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MainMenu" to="." method="_on_button_2_pressed"]
