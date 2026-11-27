@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c8dmxusgabpey"]
 
-[ext_resource type="Material" uid="uid://cprs6aqcmdq4n" path="res://objectdependencies/materials/glass.tres" id="1_1ocgy"]
+[ext_resource type="Material" uid="uid://cncdqvxnq24be" path="res://objectdependencies/materials/glass.tres" id="1_1ocgy"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_277s8"]
 
@@ -14,4 +14,5 @@ mass = 0.5
 shape = SubResource("SphereShape3D_277s8")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1578069609]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0028972626, -1.1920929e-07, -0.0023168921)
 mesh = SubResource("SphereMesh_q2x10")

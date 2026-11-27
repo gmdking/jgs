@@ -297,7 +297,7 @@ func _build_debug_tab(parent: Control) -> void:
 	parent.add_child(reset_gameplay)
 
 	var note := Label.new()
-	note.text = "Gameplay values apply immediately, persist between launches, and accept absurd/negative values. Physics ticks must stay positive. 0x freezes simulation; F3 toggles the overlay. Physics always keeps running while paused in multiplayer."
+	note.text = "Gameplay values apply immediately and persist between launches. Physics will never pause when playing multiplayer."
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	note.custom_minimum_size.x = 0.0
 	note.size_flags_horizontal = Control.SIZE_EXPAND_FILL

@@ -24,7 +24,7 @@
 [ext_resource type="PackedScene" uid="uid://c8dmxusgabpey" path="res://objects/default/glassball.tscn" id="21_33rvn"]
 [ext_resource type="PackedScene" uid="uid://d181tiuifdqj7" path="res://objects/default/glasscube.tscn" id="22_d0kg0"]
 [ext_resource type="PackedScene" uid="uid://dt8i2j3g2ayst" path="res://objects/default/woodcube.tscn" id="23_02kss"]
-[ext_resource type="PackedScene" uid="uid://buop7fppn5oe4" path="res://player.tscn" id="24_h08w4"]
+[ext_resource type="PackedScene" uid="uid://buop7fppn5oe4" path="res://player/player.tscn" id="24_h08w4"]
 [ext_resource type="PackedScene" uid="uid://bvr2faqu5gsud" path="res://objects/default/tower.tscn" id="24_w2l8p"]
 [ext_resource type="AudioStream" uid="uid://nhuva1v57ny" path="res://mapdependencies/map1.ogg" id="27_qql6e"]
 [ext_resource type="PackedScene" uid="uid://cfhw8xc8qlki" path="res://objects/default/jgs-logo-orb-1kg.tscn" id="27_v5xu6"]

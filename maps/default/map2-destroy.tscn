@@ -3,7 +3,8 @@
 [ext_resource type="PackedScene" uid="uid://dt8i2j3g2ayst" path="res://objects/default/woodcube.tscn" id="1_rtg35"]
 [ext_resource type="PackedScene" uid="uid://bc65ptq6k8rfx" path="res://objects/default/plank.tscn" id="2_et0oq"]
 [ext_resource type="AudioStream" uid="uid://bw723swpovoir" path="res://mapdependencies/map2.ogg" id="2_orosi"]
-[ext_resource type="PackedScene" uid="uid://buop7fppn5oe4" path="res://player.tscn" id="3_enocy"]
+[ext_resource type="PackedScene" uid="uid://buop7fppn5oe4" path="res://player/player.tscn" id="3_enocy"]
+[ext_resource type="PackedScene" uid="uid://bkas8onrfmwkc" path="res://objects/default/mirror.tscn" id="3_eq8rc"]
 [ext_resource type="PackedScene" uid="uid://d244xj6tgryu" path="res://gui/smenu.tscn" id="4_et0oq"]
 [ext_resource type="PackedScene" uid="uid://tkxlsm8ybobj" path="res://objects/default/snowglobe-1kg.tscn" id="5_enocy"]
 [ext_resource type="PackedScene" uid="uid://btfg37vtc4ns4" path="res://objects/default/book-0.5kg.tscn" id="6_d5bbx"]
@@ -20,6 +21,10 @@
 [ext_resource type="PackedScene" uid="uid://jkg2p1i67mr5" path="res://objects/default/cube-1000kg.tscn" id="17_q30ur"]
 [ext_resource type="PackedScene" uid="uid://bnpba63tf4j2f" path="res://objects/default/cube-10000kg.tscn" id="18_r4o3e"]
 [ext_resource type="PackedScene" uid="uid://d3vp7vni2lgec" path="res://objects/default/torch.tscn" id="20_orosi"]
+[ext_resource type="PackedScene" uid="uid://cl18cmhalcs4a" path="res://objects/default/ball.tscn" id="22_01jnj"]
+[ext_resource type="PackedScene" uid="uid://coquyg2sq8xn7" path="res://objects/default/cube.tscn" id="23_fbgv2"]
+[ext_resource type="PackedScene" uid="uid://c8dmxusgabpey" path="res://objects/default/glassball.tscn" id="24_q30ur"]
+[ext_resource type="PackedScene" uid="uid://d181tiuifdqj7" path="res://objects/default/glasscube.tscn" id="25_r4o3e"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_d5bbx"]
 size = Vector3(7.3709106, 0.001, 7.59848)
@@ -44,6 +49,9 @@ sdfgi_enabled = true
 sdfgi_use_occlusion = true
 
 [node name="Map2 - Destroy" type="Node3D" unique_id=44993789]
+
+[node name="Mirror" parent="." unique_id=527853387 instance=ExtResource("3_eq8rc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2173753, -4.2378535)
 
 [node name="floor" type="StaticBody3D" parent="." unique_id=2105752061]
 transform = Transform3D(19.514845, 0, 0, 0, 1, 0, 0, 0, 19.437223, 20.730026, 0, 22.845753)
@@ -764,3 +772,15 @@ transform = Transform3D(-0.0006950338, 0, 0.99999976, 0, 1, 0, -0.99999976, 0, -
 
 [node name="plank2d24" parent="jenga" unique_id=220139519 instance=ExtResource("2_et0oq")]
 transform = Transform3D(-0.0006950338, 0, 0.99999976, 0, 1, 0, -0.99999976, 0, -0.0006950338, 0.003110528, 8.183594, 0.0031089783)
+
+[node name="RigidBody3D" parent="." unique_id=2094809996 instance=ExtResource("22_01jnj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.287546, 0.0010004044, 6.4951305)
+
+[node name="RigidBody3D2" parent="." unique_id=607695645 instance=ExtResource("23_fbgv2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.275585, 0.001049757, 7.6786385)
+
+[node name="RigidBody3D3" parent="." unique_id=81523838 instance=ExtResource("24_q30ur")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.306742, 0.0010004044, 10.519858)
+
+[node name="RigidBody3D4" parent="." unique_id=397755167 instance=ExtResource("25_r4o3e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.586216, 0.0009994507, 10.629665)

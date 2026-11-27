@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://buop7fppn5oe4"]
-[ext_resource type="Script" path="res://player.gd" id="pl_script"]
 
+[ext_resource type="Texture2D" uid="uid://b7um2f2l6k822" path="res://player/eyes.png" id="2_rkbax"]
+[ext_resource type="Script" uid="uid://dpweialiai37q" path="res://player/player.gd" id="pl_script"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_jka67"]
 
@@ -29,6 +30,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.079, 0.3, -3.0223656)
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, -0.32519317, 2.8283541)
 light_bake_mode = 0
 sky_mode = 1
+
+[node name="Sprite3D" type="Sprite3D" parent="CameraPivot/Camera3D" unique_id=1170294332]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0.079, -0.1599837, -0.69102454)
+double_sided = false
+texture = ExtResource("2_rkbax")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1966873946]
 transform = Transform3D(0.98916286, 0, 0, 0, 0.98887503, 0, 0, 0, 0.9892592, 0, 0, 0)

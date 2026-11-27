@@ -1,6 +1,6 @@
 [gd_resource type="StandardMaterial3D" format=3 uid="uid://dxgi1vvl4rw8t"]
 
-[ext_resource type="Texture2D" uid="uid://l6ch3v4ctrkn" path="res://objectdependencies/materials/jgs-book_Cube Base Color.png" id="1_mxiiv"]
+[ext_resource type="Texture2D" uid="uid://c65mc87mny1wi" path="res://objectdependencies/materials/jgs-book_Cube Base Color.png" id="1_mxiiv"]
 
 [resource]
 resource_name = "book_cover"

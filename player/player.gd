@@ -137,6 +137,8 @@ func _try_pickup():
 	var result = get_world_3d().direct_space_state.intersect_ray(query)
 	if result and result.has("collider") and result["collider"] is RigidBody3D:
 		var target: RigidBody3D = result["collider"]
+		if target.has_meta("no_pickup"):
+			return
 		if Net.is_active():
 			if Net.peer_id == 1:
 				Net.server_pickup(self, target)
@@ -178,6 +180,8 @@ func _get_target_object() -> RigidBody3D:
 	if ray and ray.is_colliding():
 		var obj = ray.get_collider()
 		if obj and obj is RigidBody3D:
+			if obj.has_meta("no_pickup"):
+				return null
 			return obj
 	return null
 
