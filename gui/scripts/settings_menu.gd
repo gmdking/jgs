@@ -207,7 +207,7 @@ func _build_customization_tab(parent: Control) -> void:
 
 func _build_controls_tab(parent: Control) -> void:
 	var info := Label.new()
-	info.text = "Select Primary or Secondary, then press a key, mouse button, or controller input. Secondary is optional; press ESC to cancel."
+	info.text = "Select Primary or Secondary, then press a key, mouse button, or controller input. Press ESC to cancel."
 	info.add_theme_color_override("font_color", Color(0.7, 0.75, 0.85))
 	parent.add_child(info)
 
@@ -306,7 +306,7 @@ func _build_debug_tab(parent: Control) -> void:
 	gameplay_buttons.append(reset_gameplay)
 
 	var note := Label.new()
-	note.text = "Gameplay values apply immediately. In multiplayer the host controls them; clients use session-only values that are never saved. Physics will never pause when playing multiplayer."
+	note.text = "Gameplay values apply immediately. In multiplayer the host controls them. Physics will never pause when playing multiplayer."
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	note.custom_minimum_size.x = 0.0
 	note.size_flags_horizontal = Control.SIZE_EXPAND_FILL
