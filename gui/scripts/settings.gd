@@ -7,6 +7,14 @@ signal changed(key: String, value: Variant)
 const CONFIG_PATH := "user://settings.cfg"
 const OVERRIDE_PATH := "res://override.cfg"
 
+# Gameplay tuning is special in multiplayer: the host owns it, and clients get
+# a session-only copy that is never written to settings.cfg.
+const GAMEPLAY_TUNING_KEYS := [
+	"debug_gravity", "debug_game_speed", "debug_walk_speed", "debug_sprint_speed",
+	"debug_jump_strength", "debug_pickup_range", "debug_hold_distance",
+	"debug_physics_ticks", "debug_keep_physics_during_pause",
+]
+
 const DEFAULTS := {
 	"music_volume": 0.8,
 	"sfx_volume": 0.9,
@@ -63,6 +71,12 @@ const DEFAULTS := {
 	"debug_show_display": true,
 	"debug_show_engine": true,
 	"debug_show_scene": true,
+	"debug_show_network": true,
+	"debug_show_held_object": true,
+
+	# Multiplayer privacy. Off by default: IPs, ports and local paths stay
+	# masked in the F3 report until explicitly revealed here.
+	"debug_net_reveal_sensitive": false,
 
 	# Debug gameplay tuning. These apply immediately and persist so testers can
 	# keep the same sandbox setup between launches.
@@ -81,6 +95,12 @@ const DEFAULTS := {
 
 var values: Dictionary = DEFAULTS.duplicate(true)
 var input_defaults: Dictionary = {}
+
+# Overrides supplied by the host for the current multiplayer session only.
+# These live in memory, are never saved, and are discarded when the session ends.
+var session_values: Dictionary = {}
+var session_active := false
+
 var config := ConfigFile.new()
 
 
@@ -113,16 +133,63 @@ func _on_scene_changed() -> void:
 
 
 func get_value(key: String, fallback: Variant = null) -> Variant:
+	if session_active and session_values.has(key):
+		return session_values[key]
 	return values.get(key, DEFAULTS.get(key, fallback))
 
 
+func _autoload(name: String) -> Node:
+	if not is_inside_tree():
+		return null
+	var tree := get_tree()
+	if tree == null or tree.root == null:
+		return null
+	return tree.root.get_node_or_null(NodePath(name))
+
+
+## Clients may not edit gameplay tuning while a multiplayer session is active.
+## The controls are disabled too; this is a second line of defence.
+func is_gameplay_locked() -> bool:
+	var net := _autoload("Net")
+	if net == null or not bool(net.call("is_active")):
+		return false
+	return int(net.get("role")) == 2  # Net.Role.CLIENT
+
+
 func set_value(key: String, value: Variant) -> void:
+	if is_gameplay_locked() and key in GAMEPLAY_TUNING_KEYS:
+		return
 	values[key] = value
 	config.set_value("settings", key, value)
 	# Save immediately: a debounced timer would never fire while paused.
 	config.save(CONFIG_PATH)
 	_apply(key)
 	changed.emit(key, value)
+
+
+## Apply the host's tuning for this session without touching the saved config.
+## Only gameplay keys are accepted.
+func set_session_values(incoming: Dictionary) -> void:
+	var next := {}
+	for key in GAMEPLAY_TUNING_KEYS:
+		if incoming.has(key):
+			next[key] = incoming[key]
+	session_values = next
+	session_active = true
+	for key in next.keys():
+		changed.emit(key, next[key])
+	changed.emit("__session__", next)
+
+
+## Drop the host's overrides and restore this machine's saved tuning.
+func clear_session_values() -> void:
+	if not session_active and session_values.is_empty():
+		return
+	session_active = false
+	session_values.clear()
+	for key in GAMEPLAY_TUNING_KEYS:
+		changed.emit(key, values.get(key, DEFAULTS.get(key, null)))
+	changed.emit("__session__", {})
 
 
 func apply_all() -> void:
@@ -369,7 +436,15 @@ func reset_controls() -> void:
 
 
 func reset_all() -> void:
+	var locked := is_gameplay_locked()
+	var kept_gameplay := {}
+	if locked:
+		# The host owns gameplay values; never overwrite our saved copies.
+		for key in GAMEPLAY_TUNING_KEYS:
+			kept_gameplay[key] = values.get(key, DEFAULTS.get(key, null))
 	values = DEFAULTS.duplicate(true)
+	for key in kept_gameplay.keys():
+		values[key] = kept_gameplay[key]
 	for key in values.keys():
 		config.set_value("settings", key, values[key])
 	reset_controls()
@@ -379,10 +454,13 @@ func reset_all() -> void:
 
 
 func reset_keys(keys: Array) -> void:
+	var locked := is_gameplay_locked()
 	var reset: Array[String] = []
 	for key in keys:
 		var key_name := str(key)
 		if not DEFAULTS.has(key_name):
+			continue
+		if locked and key_name in GAMEPLAY_TUNING_KEYS:
 			continue
 		values[key_name] = DEFAULTS[key_name]
 		config.set_value("settings", key_name, values[key_name])

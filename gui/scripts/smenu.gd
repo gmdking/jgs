@@ -30,6 +30,24 @@ func _set_local_players_paused(value: bool) -> void:
 			node.set("menu_open", value)
 
 
+## In multiplayer (and with the debug keep-physics option) the SceneTree stays
+## running while this menu is open, so map music would otherwise keep playing
+## underneath the menu music. Pause the map's Music-bus streams explicitly.
+func _set_world_music_paused(value: bool) -> void:
+	var scene := get_tree().current_scene
+	if scene == null:
+		return
+	for type in ["AudioStreamPlayer", "AudioStreamPlayer3D"]:
+		for player in scene.find_children("*", type, true, false):
+			if player == menu_music or is_ancestor_of(player):
+				continue
+			if str(player.get("bus")) != "Music":
+				continue
+			if player.get("stream_paused") == null:
+				continue
+			player.set("stream_paused", value)
+
+
 func _process(_delta: float) -> void:
 	# Reapply immediately if the debug option is flipped while already paused.
 	if not visible:
@@ -50,6 +68,7 @@ func _ready() -> void:
 
 	# Make sure a previous pause can't leave the game frozen.
 	get_tree().paused = false
+	_set_world_music_paused(false)
 
 	for button in [resume_button, settings_button, menu_button]:
 		if button == null:
@@ -116,6 +135,7 @@ func pause() -> void:
 	_center_panel()
 	panel.visible = true
 	menu_music.play()
+	_set_world_music_paused(true)
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	# Let controller players navigate the menu without touching the mouse.
 	if resume_button != null:
@@ -129,6 +149,7 @@ func resume() -> void:
 	panel.visible = true
 	settings_ui.hide_settings()
 	menu_music.stop()
+	_set_world_music_paused(false)
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	if resume_button != null:
 		resume_button.release_focus()

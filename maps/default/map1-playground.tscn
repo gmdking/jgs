@@ -29,6 +29,10 @@
 [ext_resource type="AudioStream" uid="uid://nhuva1v57ny" path="res://mapdependencies/map1.ogg" id="27_qql6e"]
 [ext_resource type="PackedScene" uid="uid://cfhw8xc8qlki" path="res://objects/default/jgs-logo-orb-1kg.tscn" id="27_v5xu6"]
 [ext_resource type="PackedScene" uid="uid://tkxlsm8ybobj" path="res://objects/default/snowglobe-1kg.tscn" id="28_snow"]
+[ext_resource type="PackedScene" uid="uid://d3vp7vni2lgec" path="res://objects/default/torch.tscn" id="30_mmwom"]
+[ext_resource type="PackedScene" uid="uid://bc65ptq6k8rfx" path="res://objects/default/plank.tscn" id="31_wfygs"]
+[ext_resource type="PackedScene" uid="uid://36upxwhh0gba" path="res://objects/default/board.tscn" id="32_3t5c2"]
+[ext_resource type="PackedScene" uid="uid://bkas8onrfmwkc" path="res://objects/default/mirror.tscn" id="33_836ww"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4xowi"]
 
@@ -1296,9 +1300,45 @@ panning_strength = 0.0
 bus = &"Music"
 playback_type = 1
 
-[node name="orb" parent="." unique_id=1798526633 instance=ExtResource("27_v5xu6")]
+[node name="organize-these" type="Node3D" parent="." unique_id=909362723]
+
+[node name="orb" parent="organize-these" unique_id=1798526633 instance=ExtResource("27_v5xu6")]
 transform = Transform3D(0.14367767, 0, 0, 0, 0.14367767, 0, 0, 0, 0.14367767, -5.082555, 0.0929842, -1.5592852)
 mass = 100.0
 
-[node name="snowglobe" parent="." unique_id=792114235 instance=ExtResource("28_snow")]
+[node name="snowglobe" parent="organize-these" unique_id=792114235 instance=ExtResource("28_snow")]
 transform = Transform3D(0.14367767, 0, 0, 0, 0.14367767, 0, 0, 0, 0.14367767, -3.8, -0.03, -1.5592852)
+
+[node name="orb2" parent="organize-these" unique_id=1565032236 instance=ExtResource("27_v5xu6")]
+transform = Transform3D(0.14367767, 0, 0, 0, 0.14367767, 0, 0, 0, 0.14367767, -11.735762, 0.0929842, -1.5592852)
+mass = 100.0
+
+[node name="snowglobe2" parent="organize-these" unique_id=801145257 instance=ExtResource("28_snow")]
+transform = Transform3D(0.14367767, 0, 0, 0, 0.14367767, 0, 0, 0, 0.14367767, -10.453207, -0.03, -1.5592852)
+
+[node name="RigidBody3D" parent="organize-these" unique_id=541512432 instance=ExtResource("30_mmwom")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.45648, 3.0198386, 7.11926)
+
+[node name="RigidBody3D2" parent="organize-these" unique_id=186247857 instance=ExtResource("30_mmwom")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.193489, 3.3238518, 16.81812)
+
+[node name="RigidBody3D3" parent="organize-these" unique_id=1366565825 instance=ExtResource("30_mmwom")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.820343, 3.3238509, 16.144794)
+
+[node name="RigidBody3D4" parent="organize-these" unique_id=866679603 instance=ExtResource("30_mmwom")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9026489, 3.0198376, 29.090631)
+
+[node name="RigidBody3D5" parent="organize-these" unique_id=1390923219 instance=ExtResource("31_wfygs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.753056, -0.24900007, 0.44773388)
+
+[node name="RigidBody3D6" parent="organize-these" unique_id=361630592 instance=ExtResource("31_wfygs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.133396, -0.2489996, -0.30701542)
+
+[node name="RigidBody3D7" parent="organize-these" unique_id=448313151 instance=ExtResource("32_3t5c2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.593758, -0.2489996, 2.7515464)
+
+[node name="RigidBody3D8" parent="organize-these" unique_id=1636561446 instance=ExtResource("32_3t5c2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.959645, -0.2489996, -1.7025805)
+
+[node name="Mirror" parent="organize-these" unique_id=540135837 instance=ExtResource("33_836ww")]
+transform = Transform3D(-4.371139e-08, 0.1391731, -0.99026805, 0, 0.99026805, 0.1391731, 1, 6.0834497e-09, -4.328599e-08, 20.910915, 0.30099946, 3.4262638)

@@ -52,7 +52,27 @@ const SECTION_SETTINGS := {
 	"display": "debug_show_display",
 	"engine": "debug_show_engine",
 	"scene": "debug_show_scene",
+	"network": "debug_show_network",
+	"held_object": "debug_show_held_object",
 }
+
+# Every RigidBody3D / PhysicsBody3D / CollisionObject3D property we know about.
+# Read through _prop() so a property renamed between Godot versions can never
+# throw an "invalid access" error in the overlay.
+const PHYSICS_PROPERTY_NAMES := [
+	"mass", "gravity_scale", "linear_damp", "angular_damp",
+	"linear_damp_mode", "angular_damp_mode",
+	"linear_velocity", "angular_velocity",
+	"freeze", "freeze_mode", "can_sleep", "sleeping",
+	"contact_monitor", "max_contacts_reported", "continuous_cd",
+	"disable_mode", "collision_layer", "collision_mask",
+	"collision_priority", "input_ray_pickable",
+	"center_of_mass_mode", "center_of_mass", "inertia",
+	"axis_lock_linear_x", "axis_lock_linear_y", "axis_lock_linear_z",
+	"axis_lock_angular_x", "axis_lock_angular_y", "axis_lock_angular_z",
+	"physics_material_override", "physics_interpolation_mode",
+	"process_physics_priority",
+]
 
 
 class DebugGraph extends Control:
@@ -406,6 +426,10 @@ func _build_report() -> PackedStringArray:
 		_add_engine_os(lines)
 	if _section_enabled("scene"):
 		_add_scene(lines)
+	if _section_enabled("network"):
+		_add_network(lines)
+	if _section_enabled("held_object"):
+		_add_held_object(lines)
 	return lines
 
 
@@ -595,6 +619,334 @@ func _add_engine_os(lines: PackedStringArray) -> void:
 	_row(lines, "Data dir / user dir", "%s / %s" % [OS.get_data_dir(), OS.get_user_data_dir()])
 	_row(lines, "Debug build / sandboxed", "%s / %s" % [str(OS.is_debug_build()), str(OS.is_sandboxed())])
 	_row(lines, "Command line", str(OS.get_cmdline_args()))
+
+
+func _add_network(lines: PackedStringArray) -> void:
+	_section(lines, "MULTIPLAYER / NETWORK")
+	var net := get_node_or_null("/root/Net")
+	if net == null:
+		_row(lines, "Net autoload", "MISSING")
+		return
+	if not net.has_method("debug_snapshot"):
+		_row(lines, "Net debug API", "debug_snapshot() missing - update net.gd")
+		return
+	var snap: Dictionary = net.call("debug_snapshot")
+	var reveal := bool(_setting("debug_net_reveal_sensitive", false))
+	var hidden := "<hidden>"
+
+	# --- Session ---
+	_row(lines, "Role", snap.get("role_name", "?"))
+	_row(lines, "Status", snap.get("status", ""))
+	_row(lines, "Local peer id", snap.get("peer_id", 0))
+	_row(lines, "Map path", snap.get("map_path", "") if reveal else hidden)
+	_row(lines, "Server listening", snap.get("server_listening", false))
+	_row(lines, "Server port", snap.get("server_port", 0) if reveal else hidden)
+	_row(lines, "Known peers", str(snap.get("known_peers", [])))
+	_row(lines, "Next peer id", snap.get("next_peer_id", 0))
+	_row(lines, "Force full snapshot", snap.get("force_full_snapshot", false))
+
+	# --- Client socket ---
+	var client_state := int(snap.get("client_socket_state", -1))
+	_row(lines, "Client socket state", client_state)
+	if client_state >= 0:
+		_row(lines, "Client address", "%s:%s" % [snap.get("client_address", ""), snap.get("client_port", 0)] if reveal else hidden)
+		_row(lines, "Client local port", snap.get("client_local_port", 0) if reveal else hidden)
+		_row(lines, "Client TCP ago", "%d ms" % int(snap.get("client_connected_ago_ms", -1)))
+		_row(lines, "Client handshake ago", "%d ms" % int(snap.get("client_handshake_ago_ms", -1)))
+		_row(lines, "Client queue", "%s / %d packets" % [_mem(float(snap.get("client_queued_bytes", 0))), int(snap.get("client_queued_packets", 0))])
+		_add_net_stats(lines, "Client", snap.get("client_stats", {}))
+
+	# --- Host peers ---
+	var peers: Dictionary = snap.get("peers", {})
+	_row(lines, "Connected peers", peers.size())
+	for id in peers.keys():
+		var p: Dictionary = peers.get(id, {})
+		lines.append("--- Peer %d ---" % int(id))
+		_row(lines, "  Address", "%s:%s" % [p.get("address", ""), p.get("port", 0)] if reveal else hidden)
+		_row(lines, "  Local port", p.get("local_port", 0) if reveal else hidden)
+		_row(lines, "  Socket state", p.get("socket_state", -1))
+		_row(lines, "  Connected ago", "%d ms" % int(p.get("connected_ago_ms", -1)))
+		_row(lines, "  Queue", "%s / %d packets" % [_mem(float(p.get("queued_bytes", 0))), int(p.get("queued_packets", 0))])
+		_add_net_stats(lines, "  Peer", p.get("stats", {}))
+
+	# --- Replication state ---
+	var objects: Dictionary = snap.get("objects", {})
+	_row(lines, "Tracked objects", int(objects.get("tracked", 0)))
+	_row(lines, "Object signatures", int(objects.get("signatures", 0)))
+	_row(lines, "Last sent states", int(objects.get("last_sent_states", 0)))
+	_row(lines, "Held objects", int(objects.get("held", 0)))
+	var details: Array = objects.get("detail", [])
+	if not details.is_empty():
+		lines.append("--- Tracked objects (scale / mass / size / physics) ---")
+		for entry in details:
+			var d: Dictionary = entry
+			var size_text: String = str(d.get("size", Vector3.ZERO)) if bool(d.get("has_size", false)) else "n/a"
+			_row(lines, "  %s" % str(d.get("name", "?")), "holder=%s mass=%s scale=%s size=%s" % [
+				d.get("holder", -1), _num(float(d.get("mass", 0.0)), 3),
+				str(d.get("scale", Vector3.ZERO)), size_text,
+			])
+			_row(lines, "    physics", "grav=%s damp=%s/%s freeze=%s sleep=%s layer=%s mask=%s" % [
+				_num(float(d.get("gravity_scale", 0.0)), 2), _num(float(d.get("linear_damp", 0.0)), 2),
+				_num(float(d.get("angular_damp", 0.0)), 2), str(d.get("freeze", false)),
+				str(d.get("sleeping", false)), d.get("collision_layer", 0), d.get("collision_mask", 0),
+			])
+			_row(lines, "    motion", "pos=%s vel=%s ang=%s" % [
+				str(d.get("position", Vector3.ZERO)), str(d.get("linear_velocity", Vector3.ZERO)),
+				str(d.get("angular_velocity", Vector3.ZERO)),
+			])
+	var players: Dictionary = snap.get("players", {})
+	_row(lines, "Remote visuals", int(players.get("remote_visuals", 0)))
+	_row(lines, "Remote states", int(players.get("remote_states", 0)))
+	_row(lines, "Remote targets", int(players.get("remote_targets", 0)))
+	_row(lines, "Holders (peer -> key)", str(snap.get("held_by", {})) if reveal else hidden)
+	_row(lines, "Held keys -> peer", str(snap.get("holder_of", {})) if reveal else hidden)
+
+	# --- Timing / tuning ---
+	var accum: Dictionary = snap.get("accumulators", {})
+	_row(lines, "Accumulators", "player=%s object=%s diff=%s full=%s keepalive=%s" % [
+		_num(float(accum.get("player", 0.0)), 3), _num(float(accum.get("object", 0.0)), 3),
+		_num(float(accum.get("diff", 0.0)), 3), _num(float(accum.get("full_state", 0.0)), 3),
+		_num(float(accum.get("keepalive", 0.0)), 3),
+	])
+	var constants: Dictionary = snap.get("constants", {})
+	_row(lines, "Rates", "player=%s object=%s diff=%s full=%s keepalive=%s Hz" % [
+		constants.get("PLAYER_HZ", 0), constants.get("OBJECT_HZ", 0),
+		constants.get("DIFF_HZ", 0), constants.get("FULL_STATE_HZ", 0),
+		constants.get("KEEPALIVE_HZ", 0),
+	])
+	_row(lines, "Send / recv budget", "%s / %s per peer/frame" % [_mem(float(constants.get("SEND_BUDGET_PER_PEER", 0))), _mem(float(constants.get("RECV_BUDGET_PER_PEER", 0)))])
+	_row(lines, "Limits", "queue=%s packet=%s msgs/read=%s accepts/frame=%s" % [
+		_mem(float(constants.get("MAX_OUT_QUEUE", 0))), _mem(float(constants.get("MAX_PACKET", 0))),
+		constants.get("MAX_MESSAGES_PER_READ", 0), constants.get("MAX_ACCEPTS_PER_FRAME", 0),
+	])
+	_row(lines, "Extrapolation cap", "%s s" % _num(float(constants.get("MAX_EXTRAPOLATION", 0.0)), 3))
+
+
+func _add_net_stats(lines: PackedStringArray, label: String, stats: Variant) -> void:
+	if not (stats is Dictionary):
+		return
+	var sent_msgs := int(stats.get("sent_msgs", 0))
+	var sent_bytes := int(stats.get("sent_bytes", 0))
+	var recv_msgs := int(stats.get("recv_msgs", 0))
+	var recv_bytes := int(stats.get("recv_bytes", 0))
+	var dropped := int(stats.get("dropped", 0))
+	var now := Time.get_ticks_msec()
+	var last_send := int(stats.get("last_send", 0))
+	var last_recv := int(stats.get("last_recv", 0))
+	_row(lines, label + " RTT", "%s ms" % _num(float(stats.get("rtt_ms", 0.0)), 1))
+	_row(lines, label + " sent", "%d msgs / %s" % [sent_msgs, _mem(sent_bytes)])
+	_row(lines, label + " received", "%d msgs / %s" % [recv_msgs, _mem(recv_bytes)])
+	_row(lines, label + " superseded", dropped)
+	_row(lines, label + " sent types", _join_types(stats.get("sent_types", {})))
+	_row(lines, label + " recv types", _join_types(stats.get("recv_types", {})))
+	_row(lines, label + " last send/recv", "%d / %d ms ago" % [
+		now - last_send if last_send > 0 else -1,
+		now - last_recv if last_recv > 0 else -1,
+	])
+
+
+func _join_types(types: Variant) -> String:
+	if not (types is Dictionary) or (types as Dictionary).is_empty():
+		return "-"
+	var keys: Array = (types as Dictionary).keys()
+	keys.sort()
+	var parts := PackedStringArray()
+	for key in keys:
+		parts.append("%s=%d" % [str(key), int((types as Dictionary)[key])])
+	return ", ".join(parts)
+
+
+func _call_or(obj: Object, method: String, fallback: Variant) -> Variant:
+	if obj != null and obj.has_method(method):
+		return obj.call(method)
+	return fallback
+
+
+func _add_held_object(lines: PackedStringArray) -> void:
+	_section(lines, "HELD OBJECT")
+	var player: Node = null
+	for node in get_tree().get_nodes_in_group("player"):
+		if is_instance_valid(node) and node is CharacterBody3D:
+			player = node
+			break
+	if player == null:
+		_row(lines, "Local player", "(no node in group 'player')")
+		return
+	_row(lines, "Local player", "%s [%s]" % [player.name, player.scene_file_path])
+
+	var held = player.get("held_object")
+	if not (is_instance_valid(held) and held is RigidBody3D):
+		_row(lines, "Held object", "(none)")
+		return
+	var rigid := held as RigidBody3D
+	var basis := rigid.global_transform.basis
+	var mat: PhysicsMaterial = rigid.physics_material_override
+
+	_row(lines, "Object", "%s [%s]" % [rigid.name, rigid.scene_file_path])
+	_row(lines, "Class / RID", "%s / %s" % [rigid.get_class(), str(rigid.get_rid())])
+	_row(lines, "Instance id", rigid.get_instance_id())
+	_row(lines, "Script", rigid.get_script())
+	_row(lines, "Groups", ", ".join(rigid.get_groups()))
+	_row(lines, "Inside tree / visible", "%s / %s" % [str(rigid.is_inside_tree()), str(rigid.visible)])
+	_row(lines, "Process mode", rigid.process_mode)
+	_row(lines, "Children", rigid.get_child_count())
+
+	lines.append("--- Transform / scale ---")
+	_row(lines, "Global position", rigid.global_position)
+	_row(lines, "Global rotation (deg)", rigid.global_rotation_degrees)
+	_row(lines, "Global scale", basis.get_scale())
+	_row(lines, "Local position", rigid.position)
+	_row(lines, "Local rotation (deg)", rigid.rotation_degrees)
+	_row(lines, "Local scale", rigid.scale)
+	_row(lines, "Basis X", basis.x)
+	_row(lines, "Basis Y", basis.y)
+	_row(lines, "Basis Z", basis.z)
+	_row(lines, "Global transform", rigid.global_transform)
+
+	lines.append("--- Size / collision shapes ---")
+	_row(lines, "Visual bounds size", _visual_bounds_size(rigid))
+	_row(lines, "Collision shape owners", str(_call_or(rigid, "get_shape_owners", [])))
+	_add_collision_shapes(lines, rigid)
+
+	lines.append("--- Physics (all properties) ---")
+	for name in PHYSICS_PROPERTY_NAMES:
+		var value: Variant = _prop(rigid, name)
+		if value == null:
+			continue
+		_row(lines, name, _format_value(name, value))
+	if mat == null:
+		_row(lines, "physics_material_override", "(default)")
+	else:
+		_row(lines, "physics_material_override", mat.resource_path if mat.resource_path != "" else mat.get_class())
+		_row(lines, "  Friction", _num(float(mat.friction), 3))
+		_row(lines, "  Bounce", _num(float(mat.bounce), 3))
+
+	lines.append("--- Computed physics ---")
+	_row(lines, "Linear speed", _num(rigid.linear_velocity.length(), 3))
+	_row(lines, "Angular speed", _num(rigid.angular_velocity.length(), 3))
+	_row(lines, "Freeze mode", _mode_label("freeze_mode", int(_prop(rigid, "freeze_mode", 0))))
+	_row(lines, "Center of mass (effective)", _call_or(rigid, "get_center_of_mass", "n/a"))
+	_row(lines, "Inertia tensor", _call_or(rigid, "get_inertia_tensor", _call_or(rigid, "get_inertia", "n/a")))
+	_row(lines, "Inverse inertia tensor", _call_or(rigid, "get_inverse_inertia_tensor", "n/a"))
+	_row(lines, "Contact count", _call_or(rigid, "get_contact_count", -1))
+	_row(lines, "Collision exceptions", str(_call_or(rigid, "get_collision_exceptions", [])))
+
+	var net := get_node_or_null("/root/Net")
+	if net != null:
+		var reveal := bool(_setting("debug_net_reveal_sensitive", false))
+		var key := String(net.call("_key_for", rigid))
+		var holders: Dictionary = net.get("_holder_of")
+		_row(lines, "Net key", key if reveal else "<hidden>")
+		_row(lines, "Holder peer", holders.get(key, -1))
+		_row(lines, "Authority", "host" if int(net.get("role")) == 1 else "local prediction")
+
+
+## Read a property only when the running Godot version actually has it. This
+## avoids the "Invalid access to property" errors that killed the old report.
+func _prop(obj: Object, name: String, fallback: Variant = null) -> Variant:
+	if obj == null:
+		return fallback
+	for entry in obj.get_property_list():
+		var info: Dictionary = entry
+		if str(info.get("name", "")) == name:
+			return obj.get(name)
+	return fallback
+
+
+func _mode_label(name: String, value: int) -> String:
+	match name:
+		"linear_damp_mode", "angular_damp_mode":
+			return "REPLACE" if value == 0 else "ADD"
+		"center_of_mass_mode":
+			return "AUTO" if value == 0 else "CUSTOM"
+		"freeze_mode":
+			return "STATIC" if value == 0 else "KINEMATIC"
+		"disable_mode":
+			return ["REMOVE", "MAKE_STATIC", "KEEP_ACTIVE"][clampi(value, 0, 2)]
+		"physics_interpolation_mode":
+			return "OFF" if value == 0 else "ON"
+	return "?"
+
+
+func _format_value(name: String, value: Variant) -> String:
+	if value is bool:
+		return str(value)
+	if value is int:
+		if name.ends_with("_mode"):
+			return "%d (%s)" % [int(value), _mode_label(name, int(value))]
+		return str(value)
+	if value is float:
+		return _num(float(value), 4)
+	if value is Vector3:
+		var v := value as Vector3
+		return "(%s, %s, %s)" % [_num(v.x, 3), _num(v.y, 3), _num(v.z, 3)]
+	return str(value)
+
+
+func _descendants(node: Node) -> Array[Node]:
+	var result: Array[Node] = []
+	for child in node.get_children():
+		result.append(child)
+		result.append_array(_descendants(child))
+	return result
+
+
+func _visual_bounds_size(root: Node) -> String:
+	var bounds := AABB()
+	var found := false
+	for node in _descendants(root):
+		if not (node is MeshInstance3D):
+			continue
+		var mesh: Mesh = (node as MeshInstance3D).mesh
+		if mesh == null:
+			continue
+		var box: AABB = mesh.get_aabb()
+		if not found:
+			bounds = box
+			found = true
+		else:
+			bounds = bounds.merge(box)
+	if not found:
+		return "(no mesh)"
+	return "(%s, %s, %s)" % [_num(bounds.size.x, 3), _num(bounds.size.y, 3), _num(bounds.size.z, 3)]
+
+
+func _add_collision_shapes(lines: PackedStringArray, root: Node) -> void:
+	var count := 0
+	for node in _descendants(root):
+		if not (node is CollisionShape3D):
+			continue
+		var shape_node := node as CollisionShape3D
+		count += 1
+		_row(lines, "  Shape %d (%s)" % [count, shape_node.name], "%s disabled=%s" % [_shape_info(shape_node.shape), str(shape_node.disabled)])
+		if shape_node.transform != Transform3D.IDENTITY:
+			_row(lines, "    Shape transform", shape_node.transform)
+	if count == 0:
+		_row(lines, "  Collision shapes", "(none)")
+
+
+func _shape_info(shape: Shape3D) -> String:
+	if shape == null:
+		return "(no shape)"
+	match shape.get_class():
+		"BoxShape3D":
+			return "Box size=%s" % str(shape.get("size"))
+		"SphereShape3D":
+			return "Sphere radius=%s" % _num(float(shape.get("radius")), 3)
+		"CapsuleShape3D", "CylinderShape3D":
+			return "%s radius=%s height=%s" % [shape.get_class(), _num(float(shape.get("radius")), 3), _num(float(shape.get("height")), 3)]
+		"ConvexPolygonShape3D":
+			var points: Variant = shape.get("points")
+			return "Convex points=%d" % (0 if points == null else (points as PackedVector3Array).size())
+		"ConcavePolygonShape3D":
+			var data: Variant = shape.get("data")
+			return "Concave vertices=%d" % (0 if data == null else (data as PackedVector3Array).size())
+		"HeightMapShape3D":
+			return "HeightMap width=%s depth=%s" % [str(shape.get("width")), str(shape.get("depth"))]
+		"WorldBoundaryShape3D":
+			return "WorldBoundary normal=%s distance=%s" % [str(shape.get("normal")), str(shape.get("distance"))]
+		_:
+			return shape.get_class()
 
 
 func _add_scene(lines: PackedStringArray) -> void:

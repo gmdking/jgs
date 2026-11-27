@@ -57,49 +57,60 @@ func _input(event):
 		delete_target()
 
 func _physics_process(delta):
-	if menu_open:
+	# While the pause menu is open, gameplay input is ignored. If physics keeps
+	# running (multiplayer or the debug option) we still integrate gravity and
+	# collide, so opening the menu mid-jump cannot leave the player hovering.
+	var gameplay_input: bool = not menu_open
+	if menu_open and get_tree().paused:
 		return
-	#controller right thumbstick camera look
-	var look_x := Input.get_axis("look_left", "look_right")
-	var look_y := Input.get_axis("look_up", "look_down")
-	if abs(look_x) > 0.1 or abs(look_y) > 0.1:  # deadzone
-		rotate_y(-look_x * controller_look_sensitivity * delta)
-		pitch -= look_y * controller_look_sensitivity * delta
-		pitch = clamp(pitch, -PI/2, PI/2)
-		pivot.rotation.x = pitch
+	if gameplay_input:
+		#controller right thumbstick camera look
+		var look_x := Input.get_axis("look_left", "look_right")
+		var look_y := Input.get_axis("look_up", "look_down")
+		if abs(look_x) > 0.1 or abs(look_y) > 0.1:  # deadzone
+			rotate_y(-look_x * controller_look_sensitivity * delta)
+			pitch -= look_y * controller_look_sensitivity * delta
+			pitch = clamp(pitch, -PI/2, PI/2)
+			pivot.rotation.x = pitch
 
 	#standard jump
 	if not is_on_floor():
 		velocity.y -= gravity * delta
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	if gameplay_input and Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = curjump
 
-	#sprinting, also affects the jump height
-	#super sprint
-	if Input.is_action_pressed("sprint") and Input.is_action_pressed("sprint2"):
-		current_speed = sprint_speed * 2
-		curjump = highjump * 2
-	#sprint
-	elif Input.is_action_pressed("sprint"):
-		current_speed = sprint_speed
-		curjump = highjump
-	#normal
-	else:
-		current_speed = walk_speed
-		curjump = lowjump
+	if gameplay_input:
+		#sprinting, also affects the jump height
+		#super sprint
+		if Input.is_action_pressed("sprint") and Input.is_action_pressed("sprint2"):
+			current_speed = sprint_speed * 2
+			curjump = highjump * 2
+		#sprint
+		elif Input.is_action_pressed("sprint"):
+			current_speed = sprint_speed
+			curjump = highjump
+		#normal
+		else:
+			current_speed = walk_speed
+			curjump = lowjump
 
-	#movement
-	var input_dir = Input.get_vector("left", "right", "forward", "backward")
-	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-	velocity.x = direction.x * current_speed
-	velocity.z = direction.z * current_speed
+		#movement
+		var input_dir = Input.get_vector("left", "right", "forward", "backward")
+		var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+		velocity.x = direction.x * current_speed
+		velocity.z = direction.z * current_speed
+	else:
+		velocity.x = 0.0
+		velocity.z = 0.0
+		wants_pickup = false
+		wants_drop = false
 	move_and_slide()
 
 	#pickup and drop flags
-	if wants_pickup:
+	if gameplay_input and wants_pickup:
 		wants_pickup = false
 		_try_pickup()
-	if wants_drop:
+	if gameplay_input and wants_drop:
 		wants_drop = false
 		_drop_object()
 
@@ -113,16 +124,17 @@ func _physics_process(delta):
 		held_object.angular_velocity = Vector3.ZERO
 
 	#scale feature, suprisingly easy
-	#scale up
-	if Input.is_action_just_pressed("scaleup"):
-		var target = _get_target_object()
-		if target != null:
-			_scale_target(target, 1.1)
-	#scale down
-	if Input.is_action_just_pressed("scaledown"):
-		var target = _get_target_object()
-		if target != null:
-			_scale_target(target, 0.9)
+	if gameplay_input:
+		#scale up
+		if Input.is_action_just_pressed("scaleup"):
+			var target = _get_target_object()
+			if target != null:
+				_scale_target(target, 1.1)
+		#scale down
+		if Input.is_action_just_pressed("scaledown"):
+			var target = _get_target_object()
+			if target != null:
+				_scale_target(target, 0.9)
 
 # In multiplayer, clients send intents and the host computes the result.
 func _try_pickup():

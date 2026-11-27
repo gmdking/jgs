@@ -25,6 +25,7 @@ var color_buttons: Dictionary = {}
 var control_buttons: Dictionary = {}
 var secondary_buttons: Dictionary = {}
 var clear_secondary_buttons: Dictionary = {}
+var gameplay_buttons: Array[Button] = []
 
 const CROSSHAIR_STYLES := ["Off", "Dot", "Cross", "Ring", "Open Cross"]
 const RESOLUTION_LABELS := ["Native", "1280x720", "1600x900", "1920x1080", "2560x1440", "3840x2160"]
@@ -39,6 +40,8 @@ const DEBUG_SECTIONS := [
 	["display", "Display"],
 	["engine", "Engine / OS"],
 	["scene", "Scene tree"],
+	["network", "Multiplayer / network"],
+	["held_object", "Held object"],
 ]
 const DEBUG_GAMEPLAY_KEYS := [
 	"debug_gravity", "debug_game_speed", "debug_walk_speed", "debug_sprint_speed",
@@ -273,6 +276,9 @@ func _build_debug_tab(parent: Control) -> void:
 	for entry in DEBUG_SECTIONS:
 		_add_check(parent, str(entry[1]), "debug_show_" + str(entry[0]))
 
+	_add_section(parent, "Multiplayer privacy")
+	_add_check(parent, "Reveal IPs, ports & local paths", "debug_net_reveal_sensitive")
+
 	_add_section(parent, "Gameplay tuning")
 	_add_check(parent, "Keep physics running while paused", "debug_keep_physics_during_pause")
 	_add_slider(parent, "Gravity", "debug_gravity", -1000.0, 1000.0, 0.1, "m/s")
@@ -290,15 +296,17 @@ func _build_debug_tab(parent: Control) -> void:
 		preset.text = "Freeze" if is_equal_approx(float(speed), 0.0) else "%sx" % str(speed)
 		preset.pressed.connect(_on_game_speed_preset.bind(float(speed)))
 		presets.add_child(preset)
+		gameplay_buttons.append(preset)
 	parent.add_child(presets)
 
 	var reset_gameplay := Button.new()
 	reset_gameplay.text = "Reset gameplay tuning"
 	reset_gameplay.pressed.connect(_on_debug_reset_gameplay)
 	parent.add_child(reset_gameplay)
+	gameplay_buttons.append(reset_gameplay)
 
 	var note := Label.new()
-	note.text = "Gameplay values apply immediately and persist between launches. Physics will never pause when playing multiplayer."
+	note.text = "Gameplay values apply immediately. In multiplayer the host controls them; clients use session-only values that are never saved. Physics will never pause when playing multiplayer."
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	note.custom_minimum_size.x = 0.0
 	note.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -712,6 +720,26 @@ func _refresh_inputs() -> void:
 		else:
 			var option: OptionButton = options[key]
 			option.selected = clampi(int(settings.get_value(key)), 0, option.item_count - 1)
+	_update_gameplay_lock()
+
+
+## Only the host may tune gameplay during a multiplayer session. Clients get
+## the host's values as in-memory session overrides and cannot edit them.
+func _update_gameplay_lock() -> void:
+	var locked := settings != null and bool(settings.call("is_gameplay_locked"))
+	for key in DEBUG_GAMEPLAY_KEYS:
+		var slider = sliders.get(key)
+		if slider != null:
+			slider.editable = not locked
+			slider.scrollable = not locked
+		var input = slider_inputs.get(key)
+		if input != null:
+			input.editable = not locked
+		var check = checks.get(key)
+		if check != null:
+			check.disabled = locked
+	for button in gameplay_buttons:
+		button.disabled = locked
 
 
 func _suffix_for(key: String) -> String:
@@ -729,6 +757,7 @@ func _suffix_for(key: String) -> String:
 
 func show_settings() -> void:
 	visible = true
+	_update_gameplay_lock()
 	if first_focus != null:
 		first_focus.grab_focus()
 
