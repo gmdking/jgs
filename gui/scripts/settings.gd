@@ -31,6 +31,7 @@ const DEFAULTS := {
 	"low_processor": false,
 	"mouse_sensitivity": 0.002,
 	"controller_sensitivity": 3.0,
+	"discord_rich_presence": true,
 
 	# Customization / crosshair
 	"crosshair_style": 2,

@@ -3,29 +3,49 @@ extends Node
 var presence := DiscordRichPresence.new()
 var _last_scene: Node = null
 var _start_time: int = int(Time.get_unix_time_from_system())
+var _enabled := true
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	presence.app_id = "1574351339549364285"
-	add_child(presence)
+
 	presence.presence_connected.connect(func(u): print("Discord connected: ", u.get("username", "")))
 	presence.presence_disconnected.connect(func(): print("Discord disconnected"))
-	get_tree().tree_changed.connect(_check_scene, CONNECT_DEFERRED)
-	_check_scene.call_deferred()
-	
-	print("DRP: os=", OS.get_name(), " display=", DisplayServer.get_name())
-	if OS.get_name() == "Windows":
-		for i in 10:
-			var p := FileAccess.open("\\\\?\\pipe\\discord-ipc-%d" % i, FileAccess.READ_WRITE)
-			print("DRP: pipe ", i, " -> ", "OPEN" if p else error_string(FileAccess.get_open_error()))
+
+	var settings := get_node_or_null("/root/Settings")
+	if settings != null:
+		_apply_enabled(bool(settings.get_value("discord_rich_presence", true)))
+		settings.changed.connect(_on_settings_changed)
 	else:
-		var out := []
-		print("DRP: nc found: ", OS.execute("which", ["nc"], out) == 0, " ", out)
-		for k in ["XDG_RUNTIME_DIR", "TMPDIR"]:
-			print("DRP: ", k, "=", OS.get_environment(k))
-		for d in ["/tmp", OS.get_environment("XDG_RUNTIME_DIR")]:
-			if d != "" and DirAccess.dir_exists_absolute(d):
-				print("DRP: sockets in ", d, ": ", Array(DirAccess.get_files_at(d)).filter(func(f): return f.begins_with("discord-ipc")))
+		_apply_enabled(true)
+
+
+func _on_settings_changed(key: String, value: Variant) -> void:
+	if key == "discord_rich_presence":
+		_apply_enabled(bool(value))
+
+
+func _apply_enabled(enabled: bool) -> void:
+	_enabled = enabled
+	var tree := get_tree()
+
+	if enabled:
+		if not presence.is_inside_tree():
+			add_child(presence)  # addon _ready() calls connect_now()
+		if not tree.tree_changed.is_connected(_check_scene):
+			tree.tree_changed.connect(_check_scene, CONNECT_DEFERRED)
+		_last_scene = null  # important: force a fresh activity update
+		_check_scene.call_deferred()
+	else:
+		if tree.tree_changed.is_connected(_check_scene):
+			tree.tree_changed.disconnect(_check_scene)
+		_last_scene = null
+		if presence.is_inside_tree():
+			presence.clear_activity()          # queues SET_ACTIVITY null
+			await get_tree().process_frame     # let one _process() send it
+			if not _enabled:
+				remove_child(presence)         # addon _exit_tree() drops IPC
 
 func _exit_tree() -> void:
 	var tree := get_tree()

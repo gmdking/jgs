@@ -184,10 +184,6 @@ func _build_graphics_tab(parent: Control) -> void:
 	_add_check(parent, "SDFGI", "sdfgi")
 	_add_check(parent, "Distance fog", "fog")
 
-	_add_section(parent, "Gameplay feel")
-	_add_slider(parent, "Mouse sensitivity", "mouse_sensitivity", 0.0002, 0.01, 0.0001, "sens")
-	_add_slider(parent, "Controller sensitivity", "controller_sensitivity", 0.5, 10.0, 0.1, "sens")
-
 
 func _build_customization_tab(parent: Control) -> void:
 	_add_section(parent, "Crosshair")
@@ -202,7 +198,9 @@ func _build_customization_tab(parent: Control) -> void:
 	note.text = "Choose 'Off' as your crosshair to hide it."
 	note.add_theme_color_override("font_color", Color(0.7, 0.75, 0.85))
 	parent.add_child(note)
-
+	
+	_add_section(parent, "External Integrations")
+	_add_check(parent, "Discord Rich Presence", "discord_rich_presence")
 
 func _build_controls_tab(parent: Control) -> void:
 	var info := Label.new()
@@ -241,12 +239,15 @@ func _build_controls_tab(parent: Control) -> void:
 		row.add_child(clear)
 		clear_secondary_buttons[action] = clear
 
+	_add_section(parent, "Gameplay feel")
+	_add_slider(parent, "Mouse sensitivity", "mouse_sensitivity", 0.0002, 0.01, 0.0001, "sens")
+	_add_slider(parent, "Controller sensitivity", "controller_sensitivity", 0.5, 10.0, 0.1, "sens")
+
 	var reset := Button.new()
 	reset.text = "Reset Controls to Default"
 	reset.pressed.connect(_on_reset_controls)
 	parent.add_child(reset)
-
-
+	
 func _build_debug_tab(parent: Control) -> void:
 	_add_section(parent, "Debug overlay")
 	_add_check(parent, "Show overlay on startup", "debug_overlay_startup")
