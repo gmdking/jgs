@@ -1,52 +1,65 @@
 [gd_scene format=3 uid="uid://bkas8onrfmwkc"]
 
-[ext_resource type="Script" path="res://objects/scripts/mirror.gd" id="1_mirror"]
+[ext_resource type="Script" uid="uid://kx045gtebhsk" path="res://objects/scripts/mirror.gd" id="1_mirror"]
 
-[sub_resource type="Shader" id="Shader_mirror"]
-code = "shader_type spatial;\nrender_mode unshaded, cull_back;\n\nuniform sampler2D mirror_texture;\nuniform vec4 tint : source_color = vec4(1.0);\n\nvoid fragment() {\n\tvec2 uv = vec2(1.0 - SCREEN_UV.x, SCREEN_UV.y);\n\tALBEDO = texture(mirror_texture, uv).rgb * tint.rgb;\n}\n"
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_mirror"]
-shader = SubResource("Shader_mirror")
-shader_parameters = {
-"mirror_texture": null,
-"tint": Color(1, 1, 1, 1)
-}
+[sub_resource type="BoxShape3D" id="BoxShape3D_mirror"]
+size = Vector3(2.1, 1.6, 0.08)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_frame"]
 albedo_color = Color(0.05882353, 0.07058824, 0.08235294, 1)
 metallic = 0.7
 roughness = 0.35
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_glass"]
-material = SubResource("ShaderMaterial_mirror")
-
 [sub_resource type="BoxMesh" id="BoxMesh_frame"]
 material = SubResource("StandardMaterial3D_frame")
 size = Vector3(2.1, 1.6, 0.06)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_mirror"]
-size = Vector3(2.1, 1.6, 0.08)
+[sub_resource type="Shader" id="Shader_mirror"]
+code = "shader_type spatial;
+render_mode unshaded, cull_back;
 
-[node name="Mirror" type="RigidBody3D"]
+uniform sampler2D mirror_texture;
+uniform vec4 tint : source_color = vec4(1.0);
+
+void fragment() {
+	vec2 uv = vec2(1.0 - SCREEN_UV.x, SCREEN_UV.y);
+	ALBEDO = texture(mirror_texture, uv).rgb * tint.rgb;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mirror"]
+render_priority = 0
+shader = SubResource("Shader_mirror")
+shader_parameter/tint = Color(1, 1, 1, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_glass"]
+material = SubResource("ShaderMaterial_mirror")
+
+[node name="Mirror" type="RigidBody3D" unique_id=540135837]
 mass = 10.0
-lock_rotation = true
 script = ExtResource("1_mirror")
+stay_upright = false
+update_when_offscreen = true
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1351542133]
 shape = SubResource("BoxShape3D_mirror")
 
-[node name="Frame" type="MeshInstance3D" parent="."]
+[node name="Frame" type="MeshInstance3D" parent="." unique_id=393741043]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.04)
 mesh = SubResource("BoxMesh_frame")
 
-[node name="Glass" type="MeshInstance3D" parent="."]
+[node name="Glass" type="MeshInstance3D" parent="." unique_id=1908733845]
 transform = Transform3D(1, 0, 0, 0, 0, -0.75, 0, 1, 0, 0, 0, 0)
 mesh = SubResource("PlaneMesh_glass")
 
-[node name="ReflectionViewport" type="SubViewport" parent="."]
+[node name="ReflectionViewport" type="SubViewport" parent="." unique_id=1037387164]
 size = Vector2i(512, 384)
 render_target_update_mode = 4
 
-[node name="ReflectionCamera" type="Camera3D" parent="ReflectionViewport"]
-current = true
+[node name="ReflectionCamera" type="Camera3D" parent="ReflectionViewport" unique_id=1949949540]
 cull_mask = 524287
+current = true
+
+[node name="Label3D" type="Label3D" parent="." unique_id=1233904433]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.87785727, 0)
+text = "This object is unfinished!"

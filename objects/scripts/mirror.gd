@@ -24,8 +24,8 @@ var _last_screen_size := Vector2i.ZERO
 
 
 func _ready() -> void:
-	# The pickup system grabs any RigidBody3D; mirrors should stay put.
-	set_meta("no_pickup", true)
+	# Mirrors should no longer stay put. Yay!
+	# set_meta("no_pickup", true)
 	lock_rotation = stay_upright
 	reflection_resolution = Vector2i(maxi(reflection_resolution.x, 2), maxi(reflection_resolution.y, 2))
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
